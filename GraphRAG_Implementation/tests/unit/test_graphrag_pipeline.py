@@ -9,7 +9,7 @@ from neo4j_graphrag.llm.types import LLMResponse, LLMUsage
 from fsm_graphrag.config import Settings
 from fsm_graphrag.graphrag_pipeline import (
     GraphRAGService,
-    create_read_only_driver,
+    create_neo4j_driver,
     format_evidence_record,
 )
 from fsm_graphrag.text_to_cypher import PipelineError, QuestionRequest
@@ -40,8 +40,6 @@ def make_settings(*, api_key: str | None = "test-key") -> Settings:
         neo4j_database="neo4j",
         neo4j_query_timeout_seconds=5,
         log_level="INFO",
-        neo4j_read_user=None,
-        neo4j_read_password=None,
         llm_api_key=api_key,
         llm_base_url="https://llm.example/v1",
         llm_model="model-uji",
@@ -212,9 +210,24 @@ def test_missing_api_key_fails_before_provider_client_creation(driver_with_rows,
     assert FakeOpenAILLM.instances == []
 
 
-def test_read_only_driver_requires_explicit_reader_credentials():
-    with pytest.raises(ValueError, match="NEO4J_READ_USER dan NEO4J_READ_PASSWORD"):
-        create_read_only_driver(make_settings())
+def test_neo4j_driver_uses_compose_credentials(monkeypatch):
+    settings = make_settings()
+    captured = {}
+
+    def fake_driver(uri, *, auth):
+        captured["uri"] = uri
+        captured["auth"] = auth
+        return object()
+
+    monkeypatch.setattr("fsm_graphrag.graphrag_pipeline.GraphDatabase.driver", fake_driver)
+
+    driver = create_neo4j_driver(settings)
+
+    assert driver is not None
+    assert captured == {
+        "uri": settings.neo4j_uri,
+        "auth": (settings.neo4j_user, settings.neo4j_password),
+    }
 
 
 def test_evidence_formatter_keeps_provenance_and_stable_id():

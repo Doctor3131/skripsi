@@ -5,7 +5,7 @@ Status: **pipeline lokal memakai `neo4j-graphrag`; panggilan model menunggu konf
 ## Konfigurasi
 
 - `LLM_API_KEY`, `LLM_BASE_URL`, dan `LLM_MODEL` mengatur kredensial, endpoint kompatibel Chat Completions, dan model. `LLM_TEMPERATURE` default `0`; `LLM_TIMEOUT_SECONDS` default 30.
-- `NEO4J_READ_USER` dan `NEO4J_READ_PASSWORD` wajib untuk membuat driver pipeline produksi. Tidak ada fallback ke akun admin.
+- `NEO4J_URI`, `NEO4J_USER`, dan `NEO4J_PASSWORD` adalah konfigurasi koneksi yang sama dengan Docker Compose.
 - `NEO4J_QUERY_TIMEOUT_SECONDS` default 5; `NEO4J_DATABASE` menentukan database.
 - Nilai rahasia hanya berada di `.env` lokal dan tidak dicatat dalam trace.
 
@@ -21,8 +21,8 @@ Status: **pipeline lokal memakai `neo4j-graphrag`; panggilan model menunggu konf
 
 ## Guardrails dan keterbatasan
 
-- Query tervalidasi sebelum `EXPLAIN`; `EXPLAIN` bukan pengganti akun database read-only.
-- Docker Compose saat ini memakai Neo4j Community Edition. Edisi ini tidak mendukung role read-only terpisah; semua user memiliki hak admin. Maka `create_read_only_driver()` sengaja gagal tanpa `NEO4J_READ_USER/PASSWORD`. Penggunaan pipeline produksi menunggu keputusan PI untuk Enterprise/Aura atau lingkungan yang mendukung role read-only.
-- Smoke test lokal boleh memakai koneksi lokal yang tersedia untuk menguji jalur query, tetapi hasilnya hanya membuktikan `EXPLAIN` dan routing `READ`, bukan izin akun read-only.
+- Query divalidasi sebelum `EXPLAIN`; query yang lolos tetap dibatasi oleh pemeriksaan `query_type`, routing `READ`, allowlist, parameter, batas hasil, dan timeout aplikasi.
+- Docker Compose memakai Neo4j Community. Edisi ini tidak menyediakan role terpisah, sehingga akun pipeline memakai kredensial Compose dan tetap memiliki hak admin pada tingkat database. Guardrail pipeline membatasi operasi melalui aplikasi, bukan sebagai kontrol hak akses database; jangan memberi kredensial ini ke komponen yang tidak dipercaya.
+- Smoke test lokal membuktikan konektivitas serta jalur validasi/eksekusi aplikasi, bukan izin database read-only.
 - Endpoint generik harus kompatibel dengan OpenAI Chat Completions. Instalasi dan inisialisasi klien tidak mengirim request. Panggilan LLM belum dilakukan.
 - `VERIFY_NEO4J_VERSION` library dinonaktifkan pada subclass karena versi server proyek diverifikasi lewat smoke test dan pemeriksaan library menggunakan `CALL dbms.components()` saat inisialisasi. Neo4j server 5.26.5 memenuhi rentang yang didukung package.

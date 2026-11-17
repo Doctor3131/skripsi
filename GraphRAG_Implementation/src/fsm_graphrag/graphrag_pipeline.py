@@ -223,9 +223,9 @@ class GraphRAGService:
         prompt_dir: Path | None = None,
         examples: list[str] | None = None,
     ) -> GraphRAGService:
-        """Bangun service produksi hanya dengan kredensial database baca saja."""
+        """Bangun service produksi dengan kredensial Neo4j dari konfigurasi proyek."""
         return cls(
-            driver=create_read_only_driver(settings),
+            driver=create_neo4j_driver(settings),
             settings=settings,
             prompt_dir=prompt_dir,
             examples=examples,
@@ -349,13 +349,11 @@ class GraphRAGService:
             raise error from exc
 
 
-def create_read_only_driver(settings: Settings):
-    """Buat driver baca saja; tidak memakai akun admin sebagai fallback."""
-    if not settings.neo4j_read_user or not settings.neo4j_read_password:
-        raise ValueError("Isi NEO4J_READ_USER dan NEO4J_READ_PASSWORD untuk pipeline GraphRAG.")
+def create_neo4j_driver(settings: Settings):
+    """Buat driver memakai kredensial Neo4j umum yang dipakai Compose."""
     return GraphDatabase.driver(
         settings.neo4j_uri,
-        auth=(settings.neo4j_read_user, settings.neo4j_read_password),
+        auth=(settings.neo4j_user, settings.neo4j_password),
     )
 
 

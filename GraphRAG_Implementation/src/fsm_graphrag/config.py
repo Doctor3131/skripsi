@@ -15,8 +15,6 @@ class Settings:
     neo4j_database: str
     neo4j_query_timeout_seconds: float
     log_level: str
-    neo4j_read_user: str | None
-    neo4j_read_password: str | None
     llm_api_key: str | None
     llm_base_url: str
     llm_model: str | None
@@ -39,8 +37,6 @@ def load_settings() -> Settings:
         neo4j_database=os.getenv("NEO4J_DATABASE", "neo4j"),
         neo4j_query_timeout_seconds=float(os.getenv("NEO4J_QUERY_TIMEOUT_SECONDS", "5")),
         log_level=os.getenv("LOG_LEVEL", "INFO").upper(),
-        neo4j_read_user=os.getenv("NEO4J_READ_USER") or None,
-        neo4j_read_password=os.getenv("NEO4J_READ_PASSWORD") or None,
         llm_api_key=os.getenv("LLM_API_KEY") or None,
         llm_base_url=os.getenv("LLM_BASE_URL", "https://api.openai.com/v1").rstrip("/"),
         llm_model=os.getenv("LLM_MODEL") or None,

@@ -58,14 +58,13 @@ M1 implementation evidence: `docs/schema_v01_inspection.md`, `docs/bpmn_graph_sc
 - [x] Implementasikan `Text2CypherRetriever` tersaring, `GraphRAG`, dan `OpenAILLM` dengan Chat Completions; dua instance memisahkan query dan jawaban.
 - [x] Gunakan variabel generik `LLM_API_KEY`, `LLM_BASE_URL`, `LLM_MODEL`, `LLM_TEMPERATURE` (default 0), dan timeout. Tidak ada nilai model/API key lokal yang di-hard-code.
 - [x] Pertahankan allowlist Cypher/schema, parameter skalar, `LIMIT` aplikasi maksimum 50, `EXPLAIN`/query-type read-only, routing READ, timeout query, evidence/provenance, citation validation, abstain, latency/token trace.
-- [x] Tambahkan `create_read_only_driver()` yang mewajibkan `NEO4J_READ_USER/PASSWORD`, tanpa fallback akun admin.
+- [x] Gunakan kredensial Compose (`NEO4J_USER/PASSWORD`) untuk driver GraphRAG; pada Community hak database tetap admin dan operasi baca dibatasi di lapisan aplikasi.
 - [x] Tambahkan tes unit menggunakan mock; tidak ada request LLM. Jalur GraphRAG dan guardrail diuji dengan 39 tes.
 - [x] Tambahkan `scripts/graphrag_local_smoke.py` untuk menjalankan query tetap lewat retriever library dan Neo4j lokal tanpa memanggil LLM.
 - [x] Jalankan smoke baru pada Neo4j lokal melalui `GuardedText2CypherRetriever`; 8 evidence cuti dan 2 aktif ditemukan dengan provenance. `EXPLAIN`/routing READ lulus; tidak ada panggilan LLM. Laporan `results/m4/graphrag_local_smoke.json`.
-- [ ] PI memilih edisi/lingkungan Neo4j yang mendukung role read-only. Compose kini memakai Neo4j Community; edisi ini tidak mengizinkan role baca saja. Akun read-only belum dapat dibuat.
 - [ ] PI mengisi/menyetujui endpoint/model, biaya, izin data, prompt dan katalog pertanyaan sebelum request LLM eksternal.
 
-**Status:** Implementasi, 39 unit test, lint/format, dan smoke lokal GraphRAG lulus. Smoke memakai credential lokal yang ada di Community Edition, sehingga membuktikan routing READ dan EXPLAIN tetapi bukan role database read-only. Pipeline produksi tetap menunggu PI memilih edisi/lingkungan dengan role read-only, mengisi konfigurasi endpoint/model, dan menyetujui penggunaan data/biaya. Tidak ada panggilan LLM eksternal.
+**Status:** Implementasi memakai kredensial Compose pada Neo4j Community. Verifikasi setelah perubahan: 39 unit test lulus, Ruff lint/format lulus, dan smoke GraphRAG lokal menemukan 8 evidence cuti serta 2 evidence aktif dengan provenance melalui `EXPLAIN`/routing READ; tidak ada panggilan LLM. Guardrail aplikasi membatasi query, tetapi akun database tetap memiliki hak admin. Pipeline masih menunggu persetujuan PI untuk endpoint/model, penggunaan data/biaya, dan katalog pertanyaan. Tidak ada panggilan LLM eksternal.
 
 ## M4 — Preliminary Testing (not started)
 

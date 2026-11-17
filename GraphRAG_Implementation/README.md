@@ -40,7 +40,7 @@ Pipeline ada di `src/fsm_graphrag/graphrag_pipeline.py`: `Text2CypherRetriever` 
 
 `OpenAILLM` library memakai OpenAI SDK Chat Completions. Atur `LLM_API_KEY`, `LLM_BASE_URL`, `LLM_MODEL`, `LLM_TEMPERATURE`, dan `LLM_TIMEOUT_SECONDS` di `.env`. Endpoint harus kompatibel dengan `/v1/chat/completions`. Inisialisasi tidak mengirim request. Belum ada model dipilih atau panggilan API; PI perlu menyetujui model, izin penggunaan data, dan biaya sebelum request eksternal.
 
-`NEO4J_READ_USER` dan `NEO4J_READ_PASSWORD` disediakan untuk kredensial database khusus baca saja. Compose saat ini memakai Neo4j Community Edition, yang tidak mendukung role terpisah. Karena itu driver produksi menolak fallback ke akun admin sampai PI memilih lingkungan yang dapat menyediakan hak read-only. Smoke lokal hanya memverifikasi query melalui `EXPLAIN` dan routing `READ`, bukan role kredensial.
+Pipeline memakai `NEO4J_USER` dan `NEO4J_PASSWORD` yang sama dengan Compose. Neo4j Community tidak menyediakan role read-only: akun terautentikasi memiliki hak admin. Validator Cypher, `EXPLAIN`, routing `READ`, batas hasil, dan timeout membatasi operasi melalui aplikasi, tetapi tidak mengubah hak akun pada database. Smoke lokal membuktikan jalur aplikasi dan konektivitas, bukan pembatasan hak database.
 
 ## Verifikasi pengembangan
 

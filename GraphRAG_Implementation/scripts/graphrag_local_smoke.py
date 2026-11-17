@@ -91,7 +91,7 @@ def main() -> None:
         "run_id": datetime.now(UTC).strftime("graphrag-smoke-%Y%m%dT%H%M%S%fZ"),
         "llm_api_dipanggil": False,
         "llm_object": "OpenAILLM dengan invoke diganti respons tetap",
-        "database_access": "routing READ + EXPLAIN; akun Community lokal bukan role read-only",
+        "database_access": "akun Community tetap admin; query dibatasi guardrail aplikasi, EXPLAIN, dan routing READ",
         "hasil": outcomes,
     }
     output = ROOT / "results/m4/graphrag_local_smoke.json"

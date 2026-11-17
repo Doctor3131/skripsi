@@ -1,5 +1,13 @@
 # Decision Log
 
+## 2026-11-17 — Koneksi GraphRAG menggunakan kredensial Neo4j Community
+
+- **Keputusan PI:** Tetap menggunakan Neo4j Community self-hosted dengan autentikasi aktif; pipeline memakai `NEO4J_USER/PASSWORD` yang sama dengan Compose.
+- **Perubahan:** Menghapus konfigurasi dan factory driver yang mewajibkan akun khusus ber-role reader. Driver GraphRAG memakai kredensial umum proyek.
+- **Batas keamanan:** Community tidak menyediakan role read-only. Akun tetap memiliki hak admin pada tingkat database; allowlist, `EXPLAIN`, pemeriksaan tipe query, routing `READ`, batas hasil, dan timeout hanya membatasi jalur aplikasi.
+- **Status gate:** Ketiadaan role read-only bukan lagi blocker pemilihan edisi. Persetujuan provider/model, penggunaan data, biaya, prompt, dan katalog pertanyaan tetap terbuka.
+- **Bukti:** `src/fsm_graphrag/config.py`, `src/fsm_graphrag/graphrag_pipeline.py`, `tests/unit/test_graphrag_pipeline.py`, dan kontrak Text-to-Cypher.
+
 ## 2026-11-16 — Pendekatan pemodelan dan bahasa pilot BPMN
 
 - **Keputusan PI:** Flowchart visual yang rusak/tidak tersedia bukan prasyarat. PDF naratif menjadi acuan utama urutan dan kondisi; tabel DOCX menjadi pelengkap informasi pelaksana/metadata.
@@ -60,7 +68,7 @@
 - **Keputusan PI:** Ganti implementasi custom sebagai pipeline utama dengan `Text2CypherRetriever` dan `GraphRAG`; gunakan konfigurasi generik OpenAI-compatible (`LLM_API_KEY`, `LLM_BASE_URL`, `LLM_MODEL`) dan pertahankan kontrol penting aplikasi.
 - **Implementasi:** Pin `neo4j-graphrag[openai]==1.22.0` dan Neo4j Python driver `6.4.1`; `OpenAILLM` menggunakan Chat Completions. Retriever proyek memvalidasi JSON/query sebelum eksekusi, lalu menggunakan `EXPLAIN`, `RoutingControl.READ`, batas 50, timeout, formatter evidence/provenance, citation validation, dan abstain.
 - **Verifikasi aktual:** 39 unit test lulus menggunakan mock, Ruff lint/format lulus, dan smoke lokal GraphRAG menemukan 8 evidence SOP cuti serta 2 evidence SOP aktif dengan provenance melalui `EXPLAIN`/routing READ. Tidak ada request eksternal; lihat `results/m4/graphrag_local_smoke.json`.
-- **Batas edisi:** Compose menggunakan `neo4j:5.26.5` tanpa edisi Enterprise. Dokumentasi Neo4j menyatakan Community tidak mendukung role dan user memiliki hak admin. `create_read_only_driver()` kini menolak fallback admin; kredensial read-only produksi memerlukan keputusan PI untuk lingkungan yang mendukung role. Routing `READ` dan `EXPLAIN` bukan pengganti role tersebut.
+- **Catatan historis (digantikan keputusan Community 2026-11-17 di bagian atas):** Pada saat catatan ini dibuat, `create_read_only_driver()` menolak fallback admin dan pipeline menunggu keputusan lingkungan. Keputusan terbaru menggunakan kredensial Compose pada Neo4j Community; akun tetap admin pada tingkat database dan guardrail berlaku di aplikasi.
 - **Gerbang eksternal:** `.env` key/model LLM tetap kosong; belum ada persetujuan penggunaan SOP ke endpoint, biaya/model, atau panggilan LLM. Temperature default 0 dan dapat dikonfigurasi.
 - **Bukti:** `src/fsm_graphrag/graphrag_pipeline.py`, `prompts/neo4j_*_v1.md`, `docs/text_to_cypher_contract.md`, `scripts/graphrag_local_smoke.py`, `tests/unit/test_graphrag_pipeline.py`, `pyproject.toml`, dan `uv.lock`.
 

@@ -195,7 +195,7 @@ Rincian pipeline, safety controls, evidence, dan logging mengikuti M3 Text-to-Cy
 | `M4-03` | Entity/SOP aliases dan kebijakan ambiguitas berbasis evidence. |
 | `M4-04` | Prompt v1 Bahasa Indonesia dan konteks skema aktual tersedia; adapter `neo4j-graphrag` memakai `OpenAILLM` untuk endpoint OpenAI-compatible. API key/model belum diisi dan penggunaan eksternal belum disetujui. |
 | `M4-05` | Trace menyimpan query dan hasil validasi; validasi selalu terjadi sebelum eksekusi. |
-| `M4-06` | Validasi allowlist/skema, larangan mutasi, `EXPLAIN`, routing `READ`, batas hasil, timeout, dan tes penolakan query diterapkan. Akun DB read-only belum tersedia; Neo4j Community tidak menyediakan role reader. |
+| `M4-06` | Validasi allowlist/skema, larangan mutasi, `EXPLAIN`, routing `READ`, batas hasil, timeout, dan tes penolakan query diterapkan. Neo4j Community memakai kredensial Compose; akun tetap admin pada tingkat DB, sedangkan pembatasan query berada di lapisan aplikasi. |
 | `M4-07` | Pemeriksaan syntax `EXPLAIN`, hasil eksekusi, penolakan skema, dan evaluasi semantic dipisah; evaluasi semantic menunggu test set. |
 | `M4-08` | Parameter skalar, batas hasil, timeout, dan latensi retrieval diterapkan. |
 | `M4-09` | Evidence mempertahankan provenance dan abstain bila provenance/ID evidence tidak valid. |
@@ -204,7 +204,7 @@ Rincian pipeline, safety controls, evidence, dan logging mengikuti M3 Text-to-Cy
 | `M4-12` | Trace mendukung latensi, token, dan estimasi biaya per tahap bila dilaporkan provider; belum ada nilai provider nyata. |
 
 Text-to-Cypher adalah graph-based retrieval, bukan sinonim untuk semua varian GraphRAG.
-**Status 2026-11-17:** Pipeline `neo4j-graphrag` memakai `Text2CypherRetriever`, `OpenAILLM`, dan `GraphRAG`; 39 unit test, Ruff, dan smoke lokal lulus (`results/m4/graphrag_local_smoke.json`). Smoke menguji `EXPLAIN` dan query ber-routing `READ` tanpa panggilan LLM. Kredensial DB read-only belum tersedia karena deployment Neo4j Community tidak memiliki role reader. API key/model belum dikonfigurasi dan penggunaan endpoint eksternal belum disetujui; karena itu M4 masih menunggu hardening akses DB serta gate PI untuk LLM dan test set.
+**Status 2026-11-17:** Pipeline `neo4j-graphrag` memakai `Text2CypherRetriever`, `OpenAILLM`, dan `GraphRAG`; 39 unit test, Ruff, dan smoke lokal lulus (`results/m4/graphrag_local_smoke.json`). PI menetapkan Neo4j Community self-hosted; driver memakai kredensial Compose. Smoke menguji `EXPLAIN` dan query ber-routing `READ` tanpa panggilan LLM. Community tidak menyediakan role reader, sehingga akun tetap admin pada tingkat DB dan guardrail bekerja pada lapisan aplikasi. API key/model belum dikonfigurasi dan penggunaan endpoint eksternal belum disetujui; M4 masih menunggu gate PI untuk LLM, penggunaan data/biaya, dan test set.
 **Gate M4:** PI menyetujui provider/model, aturan penggunaan data dan biaya, prompt serta katalog pertanyaan sebelum panggilan LLM dan evaluasi.
 
 ---
@@ -329,7 +329,7 @@ Risiko/kegagalan; keputusan PI + tanggal:
 | M1 | Literature matrix + bukti indeks Scopus | TODO | ☐ |
 | M2 | 2 BPMN pilot + traceability SOP | BPMN disetujui/dibekukan dan di-ingest lokal (2026-11-17); otoritas versi/hak sumber masih terbuka | ✓ BPMN / ☐ otoritas sumber |
 | M3 | Schema v0.1 + Neo4j graph/fidelity | Schema approved; 43 node/70 relasi tervalidasi; hardening DB masih terbuka | ✓ schema / ✓ pilot graph |
-| M4 | Text-to-Cypher + evidence-grounded answers | Pipeline dan smoke lokal lulus; menunggu akun DB read-only, persetujuan endpoint/biaya LLM, dan test set | ☐ |
+| M4 | Text-to-Cypher + evidence-grounded answers | Driver Community memakai kredensial Compose dan guardrail aplikasi; menunggu persetujuan endpoint/biaya LLM serta test set | ☐ |
 | M5 | Pilot dataset + raw logs + error analysis | BLOCKED: M4 approval | ☐ |
 | M6 | Feasibility decision | BLOCKED: M1–M5 | ☐ |
 
@@ -338,7 +338,7 @@ Risiko/kegagalan; keputusan PI + tanggal:
 - [ ] `PI-01` Tentukan lokasi repository dan model kerja agent (lokal/cloud, izin menjalankan commands).
 - [ ] `PI-02` Sediakan SOP asli beserta hak penggunaan; jelaskan apakah boleh dikirim ke API LLM.
 - [x] `PI-03` Pilih dua SOP setelah laporan audit kompleksitas M2-02: cuti akademik + aktif kuliah setelah cuti (2026-11-16); lihat decision log.
-- [ ] `PI-04` Konfirmasi Neo4j Community atau Aura, sumber daya komputasi, serta batas biaya.
+- [ ] `PI-04` Tetapkan sumber daya komputasi dan batas biaya. Neo4j Community self-hosted sudah dipilih (2026-11-17).
 - [ ] `PI-05` Pilih LLM/protokol credential dan apakah tahap awal harus sepenuhnya lokal.
 - [x] `PI-06` Review dan setujui schema v0.1 (2026-11-16).
 - [ ] `PI-07` Setujui kebijakan evaluasi dan penilaian SOP sebelum pengujian resmi.
