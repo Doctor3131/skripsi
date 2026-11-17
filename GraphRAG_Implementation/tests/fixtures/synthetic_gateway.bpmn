@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             targetNamespace="https://example.invalid/synthetic">
+  <process id="Process_Pilot" name="Synthetic request process" isExecutable="false">
+    <laneSet id="LaneSet_Office">
+      <lane id="Lane_Office" name="Synthetic Office">
+        <flowNodeRef>Start_Request</flowNodeRef>
+        <flowNodeRef>Task_Review</flowNodeRef>
+        <flowNodeRef>Gateway_Approved</flowNodeRef>
+        <flowNodeRef>Task_Approve</flowNodeRef>
+        <flowNodeRef>Task_Reject</flowNodeRef>
+        <flowNodeRef>End_Request</flowNodeRef>
+      </lane>
+    </laneSet>
+    <startEvent id="Start_Request" name="Request received" />
+    <userTask id="Task_Review" name="Review request">
+      <documentation>Synthetic fixture only.</documentation>
+      <dataInput id="ReviewFormInput" name="Request form" />
+      <dataInputAssociation id="InputAssociation_Form">
+        <sourceRef>RequestForm</sourceRef>
+        <targetRef>ReviewFormInput</targetRef>
+      </dataInputAssociation>
+    </userTask>
+    <exclusiveGateway id="Gateway_Approved" name="Approved?" default="Flow_Rejected" />
+    <userTask id="Task_Approve" name="Approve request">
+      <dataOutput id="ReceiptOutput" name="Receipt" />
+      <dataOutputAssociation id="OutputAssociation_Receipt">
+        <sourceRef>ReceiptOutput</sourceRef>
+        <targetRef>ApprovalReceipt</targetRef>
+      </dataOutputAssociation>
+    </userTask>
+    <userTask id="Task_Reject" name="Reject request" />
+    <endEvent id="End_Request" name="Request completed" />
+    <sequenceFlow id="Flow_Start_Review" sourceRef="Start_Request" targetRef="Task_Review" />
+    <sequenceFlow id="Flow_Review_Gateway" sourceRef="Task_Review" targetRef="Gateway_Approved" />
+    <sequenceFlow id="Flow_Approved" sourceRef="Gateway_Approved" targetRef="Task_Approve">
+      <conditionExpression xsi:type="tFormalExpression">approved = true</conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_Rejected" sourceRef="Gateway_Approved" targetRef="Task_Reject" />
+    <sequenceFlow id="Flow_Approve_End" sourceRef="Task_Approve" targetRef="End_Request" />
+    <sequenceFlow id="Flow_Reject_End" sourceRef="Task_Reject" targetRef="End_Request" />
+    <dataObjectReference id="RequestForm" name="Synthetic request form" />
+    <dataObjectReference id="ApprovalReceipt" name="Synthetic approval receipt" />
+  </process>
+  <collaboration id="Collaboration_Pilot">
+    <participant id="Participant_Office" name="Synthetic Office" processRef="Process_Pilot" />
+  </collaboration>
+</definitions>

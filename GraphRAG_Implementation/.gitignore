@@ -1,0 +1,23 @@
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+
+# Python / uv
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local Neo4j state and logs
+neo4j_data/
+neo4j_logs/
+*.log
+
+# Generated artifacts
+results/**
+!results/**/.gitkeep

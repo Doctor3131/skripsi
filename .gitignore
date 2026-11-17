@@ -1,0 +1,27 @@
+# Local credentials; keep distributable examples.
+.env
+.env.*
+!.env.example
+
+# Python environments, caches, and generated reports.
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local Neo4j state and logs.
+neo4j_data/
+neo4j_logs/
+*.log
+
+# Obsidian machine-specific state and installed community plugins.
+.obsidian/workspace*.json
+.obsidian/cache/
+.obsidian/plugins/
+
+# Nested checkout used as local reference material, not part of this project.
+/neo4j-skills/

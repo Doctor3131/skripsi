@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="380" viewBox="0 0 1240 380">
+<defs><marker id="panah" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#334155"/></marker></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="36" y="42" font-family="sans-serif" font-size="24" font-weight="700" fill="#172554">Permohonan Izin Aktif Kuliah Setelah Cuti</text>
+<rect x="35" y="105" width="1170" height="210" fill="#f8fafc" stroke="#94a3b8"/>
+<line x1="190" y1="105" x2="190" y2="315" stroke="#94a3b8"/>
+<text x="48" y="193" font-family="sans-serif" font-size="14" fill="#334155">Mahasiswa</text>
+<path d="M 254 189.0 H 347.0 V 191.0 H 440" fill="none" stroke="#334155" stroke-width="2" marker-end="url(#panah)"/>
+<path d="M 630 191.0 H 650.0 V 191.0 H 670" fill="none" stroke="#334155" stroke-width="2" marker-end="url(#panah)"/>
+<path d="M 860 191.0 H 880.0 V 189.0 H 900" fill="none" stroke="#334155" stroke-width="2" marker-end="url(#panah)"/>
+<path d="M 535.0 255 V 243.5 H 535.0 V 232" fill="none" stroke="#c2410c" stroke-width="1.5" stroke-dasharray="5 4"/>
+<circle cx="232.0" cy="189.0" r="21" fill="#fff" stroke="#0f766e" stroke-width="3"/>
+<text x="232.0" y="229" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#0f172a">Proses pengaktifan</text>
+<text x="232.0" y="243" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#0f172a">kembali dimulai</text>
+<rect x="440" y="150" width="190" height="82" rx="12" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2"/>
+<text x="535.0" y="172.0" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#0f172a">Melapor kepada Ketua</text>
+<text x="535.0" y="188.0" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#0f172a">Program Studi dan Subbag</text>
+<text x="535.0" y="204.0" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#0f172a">Akademik dan</text>
+<text x="535.0" y="220.0" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#0f172a">Kemahasiswaan</text>
+<rect x="670" y="150" width="190" height="82" rx="12" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2"/>
+<text x="765.0" y="180.0" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#0f172a">Melakukan registrasi</text>
+<text x="765.0" y="196.0" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#0f172a">daring melalui SSO</text>
+<text x="765.0" y="212.0" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#0f172a">masing-masing mahasiswa</text>
+<circle cx="922.0" cy="189.0" r="21" fill="#fff" stroke="#0f766e" stroke-width="3"/>
+<circle cx="922.0" cy="189.0" r="16" fill="none" stroke="#0f766e" stroke-width="2"/>
+<text x="922.0" y="229" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#0f172a">Terdaftar sebagai</text>
+<text x="922.0" y="243" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#0f172a">peserta kuliah atau</text>
+<text x="922.0" y="257" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#0f172a">mahasiswa aktif di</text>
+<text x="922.0" y="271" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#0f172a">fakultas</text>
+<path d="M 415 255 h 228 l 12 12 v 43 h -240 z" fill="#fff7ed" stroke="#c2410c" stroke-width="1.5"/>
+<path d="M 643 255 v 12 h 12" fill="none" stroke="#c2410c"/>
+<text x="535.0" y="272" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#7c2d12">Surat Izin Cuti dan fotokopi Kartu</text>
+<text x="535.0" y="285" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#7c2d12">Tanda Mahasiswa (KTM)</text>
+<text x="36" y="358" font-family="sans-serif" font-size="12" fill="#64748b">Pratinjau turunan BPMN · FSM-SOP-AKTIF-SETELAH-CUTI-BPMN-v1 · bukan sumber SOP</text>
+</svg>
