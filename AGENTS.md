@@ -55,7 +55,7 @@ Workspace ini memiliki dua area kerja dengan workflow masing-masing, serta satu 
 
 - **Application engineering:** [`GraphRAG_Implementation/`](GraphRAG_Implementation/), dengan instruksi khusus di [`AGENTS_IMPLEMENT.md`](GraphRAG_Implementation/AGENTS_IMPLEMENT.md), status milestone di [`docs/implementation_task_tracker.md`](GraphRAG_Implementation/docs/implementation_task_tracker.md), dan keputusan di [`docs/decision_log.md`](GraphRAG_Implementation/docs/decision_log.md). Jalankan setup Python dan Docker dari folder ini.
 - **Thesis writing:** [`GraphRAG_skripsi/`](GraphRAG_skripsi/), mengikuti [instruksi dan checklist penulisan](GraphRAG_skripsi/AGENTS_SKRIPSI.md). Proposal Bab I–III dapat berjalan paralel dengan engineering; Bab IV–V menunggu hasil dan evidence yang disetujui.
-- **Research data:** [`data/`](data/) berada di root vault agar menjadi sumber bersama bagi engineering dan penulisan. Struktur data: `raw/`, `flowchart/`, `bpmn/`, `processed/`, `evaluation/`, `references/`, `diagram/`.
+- **Research data:** [`data/`](data/) berada di root vault agar menjadi sumber bersama bagi engineering dan penulisan. Struktur data: `raw/`, `flowchart/`, `bpmn/`, `processed/`, `evaluation/`, `references/books/`, `references/papers/`, `diagram/`.
 
 Checklist ini adalah koordinator riset: engineering menghasilkan artefak dan evidence; checklist penulisan mengatur alur penyusunan naskah. Jangan mencampur setup aplikasi dengan draft skripsi.
 

@@ -289,6 +289,8 @@ skripsi-vault/              # Workspace root
 │   ├── processed/
 │   ├── evaluation/
 │   └── references/
+│       ├── books/
+│       └── papers/
 └── GraphRAG_Implementation/ # Run application setup and commands from here
     ├── README.md
     ├── AGENTS_IMPLEMENT.md

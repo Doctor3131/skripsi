@@ -19,7 +19,7 @@ skripsi-vault/
 │   ├── bpmn/                     # BPMN models created from approved sources
 │   ├── processed/                # Derived/intermediate artifacts
 │   ├── evaluation/               # Evaluation questions and materials
-│   └── references/               # Shared reference materials
+│   └── references/               # books/ and papers/ shared references
 ├── GraphRAG_Implementation/      # Application engineering project
 └── GraphRAG_skripsi/             # Thesis-writing workspace
 ```

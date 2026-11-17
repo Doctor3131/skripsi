@@ -47,6 +47,8 @@ GraphRAG_skripsi/
 ├── processed/         # Derived artifacts
 ├── evaluation/        # Evaluation questions and related material
 └── references/        # Shared reference source files
+    ├── books/
+    └── papers/
 ```
 
 ## Handoff boundaries

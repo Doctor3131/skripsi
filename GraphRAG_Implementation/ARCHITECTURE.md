@@ -39,7 +39,9 @@ GraphRAG_Implementation/
 ├── bpmn/                   # BPMN source models
 ├── processed/              # Derived data and intermediate artifacts
 ├── evaluation/             # Candidate and approved evaluation material
-└── references/             # Shared research reference files
+└── references/             # Shared reference files
+    ├── books/              # Book sources
+    └── papers/             # Research papers
 ```
 
 ## Data and safety boundaries
