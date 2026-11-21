@@ -95,8 +95,8 @@ Task IDs selesai: `M0-01` audit awal; `M0-02` struktur repo/data; `M0-03` Python
 
 ## Checklist tindakan
 
-- [ ] `M1-01` **Inventaris paper.** **Lakukan:** buat satu record per versi publikasi; catat judul, penulis, tahun, DOI, URL, venue, tipe (jurnal/prosiding/preprint), dan versi. **Bukti:** `docs/literature_matrix.csv`. **Done:** tidak ada paper yang hanya dikenal dari judul.
-- [ ] `M1-02` **Verifikasi Scopus secara ketat.** **Lakukan:** periksa artikel/record lewat Scopus atau sumber bibliografi yang jelas; rekam tanggal cek, link bukti, status `CONFIRMED_ARTICLE`, `VENUE_ONLY`, `NOT_VERIFIED`, `NOT_INDEXED` bila bukti cukup. **Jangan menyamakan indeks jurnal dengan indeks artikel.** **Bukti:** `docs/scopus_verification.md`. **Done:** tiap status punya bukti atau ketidakpastian eksplisit.
+- [ ] `M1-01` **Inventaris paper dan buku.** **Lakukan:** buat satu record per versi publikasi; catat judul, penulis, tahun, DOI/ISBN, URL, venue/penerbit, tipe, dan versi. Masukkan paper serta buku pada `data/references/`. **Bukti:** [`GraphRAG_skripsi/references/literature_matrix.csv`](GraphRAG_skripsi/references/literature_matrix.csv). **Done:** sumber dapat diidentifikasi dan tidak hanya dikenal dari judul.
+- [ ] `M1-02` **Verifikasi Scopus secara ketat.** **Lakukan:** periksa artikel/record lewat Scopus atau sumber bibliografi yang jelas; rekam tanggal cek, link bukti, status `CONFIRMED_ARTICLE`, `VENUE_ONLY`, `NOT_VERIFIED`, `NOT_INDEXED` bila bukti cukup. **Jangan menyamakan indeks jurnal dengan indeks artikel.** Buku diberi status `N/A_BOOK`. **Bukti:** [`GraphRAG_skripsi/references/scopus_verification.md`](GraphRAG_skripsi/references/scopus_verification.md). **Done:** tiap status artikel punya bukti atau ketidakpastian eksplisit.
 - [ ] `M1-03` **Baca paper BPMN→graph.** **Fokus:** mapping BPMN XML ke labeled property graph, sequence flow/gateway, provenance, graph validation. **Bukti:** reading card dengan kutipan/parafrase lokasi halaman.
 - [ ] `M1-04` **Baca paper process-aware LLM/RAG.** **Fokus:** arsitektur retrieval, representasi proses, jenis pertanyaan, evaluation dataset dan error. **Bukti:** reading card.
 - [ ] `M1-05` **Baca paper Text-to-Cypher.** **Fokus:** schema prompting, syntax vs semantic correctness, execution-guided repair, database safety. **Bukti:** reading card.
@@ -141,16 +141,17 @@ Task IDs selesai: `M0-01` audit awal; `M0-02` struktur repo/data; `M0-03` Python
 
 ## Checklist tindakan
 
-- [ ] `M2-01` **Terima data resmi.** **Lakukan:** simpan PDF SOP dan tabel DOCX yang tersedia tanpa mengubah isi; catat pasangan yang disetujui PI, ID proyek, versi metadata, checksum, sumber, izin, dan format. Flowchart visual bukan prasyarat sesuai keputusan PI. **Bukti:** `docs/data_inventory.csv`. **Done:** sumber yang digunakan dan batas izinnya tercatat.
+- [x] `M2-01` **Terima data pilot untuk lingkup eksplorasi.** Pasangan sumber, ID proyek, metadata, dan checksum tercatat di `docs/data_inventory.csv`; pada 2026-11-17 PI menerima status sumber/izin/otoritas versi untuk lingkup ini. Penerimaan PI tidak dimaknai sebagai verifikasi independen hak publikasi atau otoritas penerbit. Flowchart visual bukan prasyarat.
 - [x] `M2-02` **Audit kelengkapan 7 SOP.** Audit teks PDF dan tabel DOCX tersedia; flowchart visual bukan prasyarat. **Bukti:** `GraphRAG_Implementation/docs/sop_audit.md`.
 - [x] `M2-03` **Pilih 2 SOP pilot.** PI memilih SOP Permohonan Izin Cuti Akademik dan SOP Permohonan Izin Aktif Kuliah Setelah Cuti (2026-11-16); rationale dan batas approval ada di `GraphRAG_Implementation/docs/decision_log.md`. **Bukti:** keputusan PI tercatat; ID proyek tersedia, nomor resmi tidak ditemukan pada sumber.
 - [x] `M2-04` Aturan notasi, sumber, dan batas interpretasi disetujui; lihat `GraphRAG_Implementation/docs/bpmn_modeling_rules.md`.
 - [x] `M2-05` BPMN SOP cuti beserta pratinjau dan traceability dibuat, divalidasi, disetujui, dan dibekukan.
 - [x] `M2-06` BPMN SOP aktif setelah cuti beserta pratinjau dan traceability dibuat, divalidasi, disetujui, dan dibekukan.
-- [x] `M2-07` Validasi parser/struktur BPMN lulus; lihat `GraphRAG_Implementation/results/m2/bpmn_validation.json`. Review modeler BPMN khusus belum dilakukan.
+- [x] `M2-07` Validasi parser/struktur BPMN lulus; lihat `GraphRAG_Implementation/results/m2/bpmn_validation.json`. PI menerima validasi yang tersedia sebagai cukup untuk lingkup pilot dan menutup tindak lanjut XSD/modeler pada 2026-11-17; pemeriksaan tambahan itu tidak diklaim telah dilakukan.
 - [x] `M2-08` PI menyetujui fidelitas semantik, tafsir pilihan pengambilan, konflik penandatangan, dan outcome status aktif pada 2026-11-17; lihat manifest dan decision log.
 - [x] `M2-09` Jalur BPMN serta traversal graph untuk seluruh akhir proses tervalidasi; lihat `results/m2/path_check.md` dan `results/m2/ingestion_report.json`.
-- [x] `M2-10` BPMN v1 dibekukan dengan checksum dan approval PI di `results/m2/pilot_manifest.json` (2026-11-17).
+- [x] `M2-10` BPMN v1 dibekukan dengan checksum dan approval PI di `results/m2/pilot_manifest.json` (2026-11-17); v1 kemudian digantikan oleh revisi template v2.
+- [x] `M2-11` BPMN v2 berbasis `data/bpmn/template_contoh.bpmn` dibangun dan divalidasi; seluruh graph data Neo4j direset atas arahan PI dan v2 di-ingest (43 node/70 relasi). Bukti reset/ingest ada di `GraphRAG_Implementation/results/m2/`; manifest v2 menunggu review PI sebelum freeze.
 
 > [!warning] Perlakuan alur alternatif
 > Jika SOP asli tidak mendefinisikan cabang "gagal/tidak lengkap", **jangan menambahkan jalur baru sebagai fakta SOP**. Tandai kekosongan sebagai keterbatasan data. Bila ingin membuat cabang simulasi, simpan terpisah dan jangan dicampur dengan pengujian SOP resmi.
@@ -158,7 +159,7 @@ Task IDs selesai: `M0-01` audit awal; `M0-02` struktur repo/data; `M0-03` Python
 > [!question] Pertanyaan review PI — M2
 > Apakah aktivitas dan aktor berubah ketika dibuat BPMN? Apakah kondisi percabangan tersurat? Apa yang diketahui/tidak diketahui dari tujuh SOP? Mengapa dua SOP tersebut representatif untuk pilot?
 
-**Gate M2:** Persetujuan PI atas kedua BPMN dicatat 2026-11-17 dan ingest lokal pilot telah dilakukan. Otoritas versi sumber dan hak publikasi tetap terbuka untuk penggunaan lanjutan.
+**Gate M2:** Semantik kedua pilot v1 disetujui PI; BPMN v2 berbasis template dan graph v2 telah dibangun/di-ingest setelah reset penuh database pada 2026-11-17. Review PI terhadap tampilan v2 masih menunggu sebelum versi baru dibekukan. Penerimaan sumber/izin dan penutupan XSD/modeler merupakan keputusan lingkup, bukan klaim verifikasi independen atau pemeriksaan tambahan.
 
 ---
 
@@ -174,13 +175,13 @@ Schema v0.1 disetujui PI. Rincian implementasi parser, mapper, dan ingestion ada
 | `M3-04` | Identitas stabil `[sop_id, model_id, bpmn_element_id]`; pertahankan ID BPMN asli. |
 | `M3-05` | Constraint/index dan batasan edisi Neo4j; jangan jalankan migration pada DB live tanpa gate. |
 | `M3-06` | Ingest fixture sintetis dan catat statistik/log. |
-| `M3-07` | Dua BPMN approved/frozen di-ingest ke Neo4j Compose; run ID dan statistik tercatat di `results/m2/ingestion_report.json`. |
+| `M3-07` | BPMN v2 di-ingest setelah reset seluruh graph data atas arahan PI; run ID dan statistik 43 node/70 relasi tercatat di `results/m2/ingestion_report.json`. |
 | `M3-08` | Fidelity 43 node/70 relasi, kondisi, cabang bawaan, lane, dan provenance tervalidasi. |
 | `M3-09` | Dua jalur cuti dan satu jalur aktif dapat ditelusuri hingga seluruh event akhir. |
 | `M3-10` | Provenance graph menyimpan ID SOP/model, ID BPMN, berkas sumber, dan hash; traceability sumber tersedia dalam CSV. |
-| `M3-11` | Dokumentasikan backup/restore; reset DB perlu otorisasi eksplisit. |
+| `M3-11` | N/A — backup/restore dikeluarkan dari lingkup atas arahan PI (2026-11-17); reset DB tetap perlu otorisasi eksplisit. |
 
-**Gate M3:** ingest dan fidelity graph pilot selesai. Constraint/index Neo4j, fixture DB sintetis, backup/restore, dan review modeler masih perlu ditangani sebelum Text-to-Cypher.
+**Gate M3:** ingest dan fidelity graph pilot selesai. Constraint/index Neo4j dan fixture DB sintetis masih perlu ditangani sebelum Text-to-Cypher.
 
 ---
 
@@ -327,8 +328,8 @@ Risiko/kegagalan; keputusan PI + tanggal:
 | GOV | Roles, evidence policy, task registry | TODO | ☐ |
 | M0 | Repository reproducible + smoke test Neo4j | COMPLETE (2026-11-15) | ✓ |
 | M1 | Literature matrix + bukti indeks Scopus | TODO | ☐ |
-| M2 | 2 BPMN pilot + traceability SOP | BPMN disetujui/dibekukan dan di-ingest lokal (2026-11-17); otoritas versi/hak sumber masih terbuka | ✓ BPMN / ☐ otoritas sumber |
-| M3 | Schema v0.1 + Neo4j graph/fidelity | Schema approved; 43 node/70 relasi tervalidasi; hardening DB masih terbuka | ✓ schema / ✓ pilot graph |
+| M2 | 2 BPMN pilot + traceability SOP | v1 disetujui; v2 berbasis template sudah divalidasi dan menunggu review PI | ✓ semantik v1 / ☐ review v2 |
+| M3 | Schema v0.1 + Neo4j graph/fidelity | Graph v2 berisi 43 node/70 relasi setelah reset penuh; hardening DB masih terbuka | ✓ schema / ✓ graph v2 |
 | M4 | Text-to-Cypher + evidence-grounded answers | Driver Community memakai kredensial Compose dan guardrail aplikasi; menunggu persetujuan endpoint/biaya LLM serta test set | ☐ |
 | M5 | Pilot dataset + raw logs + error analysis | BLOCKED: M4 approval | ☐ |
 | M6 | Feasibility decision | BLOCKED: M1–M5 | ☐ |

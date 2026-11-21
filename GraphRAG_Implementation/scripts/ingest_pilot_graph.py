@@ -21,12 +21,12 @@ PILOTS = (
     (
         VAULT / "data/bpmn/pilot_sop_a.bpmn",
         "FSM-SOP-CUTI-AKADEMIK",
-        "FSM-SOP-CUTI-AKADEMIK-BPMN-v1",
+        "FSM-SOP-CUTI-AKADEMIK-BPMN-v2",
     ),
     (
         VAULT / "data/bpmn/pilot_sop_b.bpmn",
         "FSM-SOP-AKTIF-SETELAH-CUTI",
-        "FSM-SOP-AKTIF-SETELAH-CUTI-BPMN-v1",
+        "FSM-SOP-AKTIF-SETELAH-CUTI-BPMN-v2",
     ),
 )
 ALLOWED_LABELS = {
@@ -474,7 +474,10 @@ def main() -> int:
             }
             for projection in projections
         ],
-        "catatan": "Ingest idempoten memakai MERGE; tidak ada reset atau penghapusan data.",
+        "catatan": (
+            "Ingest memakai MERGE tanpa penghapusan; reset penuh sebelum run ini "
+            "tercatat di results/m2/database_reset_report.json."
+        ),
     }
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

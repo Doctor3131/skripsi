@@ -16,11 +16,11 @@ def test_validator_accepts_scoped_read_query_and_sets_controlled_limit() -> None
         SAFE_QUERY,
         {"sop_id": "SOP-LAIN"},
         sop_id="FSM-SOP-CUTI-AKADEMIK",
-        model_id="FSM-SOP-CUTI-AKADEMIK-BPMN-v1",
+        model_id="FSM-SOP-CUTI-AKADEMIK-BPMN-v2",
     )
     assert safe.parameters == {
         "sop_id": "FSM-SOP-CUTI-AKADEMIK",
-        "model_id": "FSM-SOP-CUTI-AKADEMIK-BPMN-v1",
+        "model_id": "FSM-SOP-CUTI-AKADEMIK-BPMN-v2",
         "maks_hasil": 50,
     }
 
@@ -51,7 +51,7 @@ def test_validator_rejects_complex_or_unused_parameters() -> None:
             SAFE_QUERY,
             {
                 "sop_id": ["a", "b"],
-                "model_id": "FSM-SOP-CUTI-AKADEMIK-BPMN-v1",
+                "model_id": "FSM-SOP-CUTI-AKADEMIK-BPMN-v2",
             },
         )
     with pytest.raises(PipelineError, match="tidak dipakai"):
@@ -59,7 +59,7 @@ def test_validator_rejects_complex_or_unused_parameters() -> None:
             SAFE_QUERY,
             {
                 "sop_id": "x",
-                "model_id": "FSM-SOP-CUTI-AKADEMIK-BPMN-v1",
+                "model_id": "FSM-SOP-CUTI-AKADEMIK-BPMN-v2",
                 "other": "y",
             },
         )

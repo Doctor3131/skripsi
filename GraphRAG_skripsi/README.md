@@ -32,7 +32,7 @@ GraphRAG_skripsi/
 ├── evidence/               # Indeks dan bukti yang boleh dipakai untuk penulisan
 ├── results/                # Tabel, log, dan ringkasan hasil terverifikasi
 ├── figures/                # Gambar/diagram final untuk naskah
-├── references/              # Metadata dan matriks literatur terverifikasi
+├── references/              # Inventaris paper/buku, verifikasi bibliografi, dan reading cards
 └── decisions/               # Keputusan penelitian dan perubahan yang disetujui
 ```
 

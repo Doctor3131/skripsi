@@ -6,6 +6,8 @@ Project root: `GraphRAG_Implementation/`. Run project setup, test, lint, and Doc
 
 Milestone crosswalk: this engineering tracker numbers implementation milestones locally. Root checklist M2 is SOP audit/modeling (tracked below as M2 source audit, then local M2 ingestion); root M3 is graph parsing/ingestion; root M4 is Text-to-Cypher; root M5 is preliminary evaluation. Root M1 literature review is independent and tracked by its literature artifacts.
 
+Root checklist M1 (literature review) is tracked in `../GraphRAG_skripsi/references/`; literature is outside the application engineering tracker.
+
 ## M0 — Environment Setup (complete; smoke check passed 2026-11-15)
 
 - [x] Inspect the existing vault; no Python project or real SOP data was present.
@@ -36,7 +38,7 @@ M1 implementation evidence: `docs/schema_v01_inspection.md`, `docs/bpmn_graph_sc
 
 - [x] Inventory seven PDF/DOCX source pairs, record exact-byte SHA-256, and extract available header metadata in `docs/data_inventory.csv`; PI approved the pairings on 2026-11-16.
 - [x] Audit process text, actors, documents, timing, conditions, ambiguity, and cross-source differences in `docs/sop_audit.md`.
-- [ ] PI confirms source-owner rights and whether the dated DOCX revisions are authoritative/current. Project-local `sop_id` values and metadata-based labels are recorded; official SOP numbers/effective dates and rights remain unverified. Visual flowcharts are not a prerequisite.
+- [x] PI accepted the available source/rights/version status for the exploration scope on 2026-11-17. This is a scope decision, not independent verification of publication rights or issuing authority. Visual flowcharts are not a prerequisite.
 - [x] PI selected `Permohonan Izin Cuti Akademik` and `Permohonan Izin Aktif Kuliah Setelah Cuti` on 2026-11-16; rationale and scope boundary are recorded in `docs/decision_log.md`.
 - [x] PI decided on 2026-11-16 that missing/broken visual flowcharts are not a prerequisite; PDF narrative controls sequence/conditions and DOCX tables supplement actors/metadata.
 - [x] Generate both draft BPMNs, Indonesian SVG previews, model manifest, path check, and traceability index with the approved source hierarchy and model IDs; see `scripts/build_pilot_bpmn.py` and `results/m2/`.
@@ -47,10 +49,16 @@ M1 implementation evidence: `docs/schema_v01_inspection.md`, `docs/bpmn_graph_sc
 - [x] Ingest kedua BPMN approved/frozen ke Neo4j Compose dengan transaksi `MERGE`; tidak ada reset/penghapusan. Run `m2-ingest-20261116T174747461682Z` dan hasil ada di `results/m2/ingestion_report.json`.
 - [x] Verifikasi identitas stabil, endpoint/jenis relasi, kondisi, cabang bawaan, provenance, traversal seluruh jalur, serta statistik node dan relasi.
 - [x] Ulang ingest idempoten: basis data tetap 43 node dan 70 relasi; tidak ada ID ganda.
-- [ ] Lengkapi pemeriksaan sumber resmi/izin pemilik, nomor SOP resmi, tanggal efektif, dan status kewenangan versi DOCX. Persetujuan PI saat ini mencakup pemrosesan lokal pilot, bukan penetapan otoritas penerbit.
-- [ ] Selesaikan validasi BPMN XSD penuh, review dalam modeler BPMN, dan dokumentasi backup/restore Neo4j.
+- [x] PI menutup tindak lanjut pemeriksaan sumber resmi/izin pemilik, nomor SOP resmi, tanggal efektif, dan kewenangan versi DOCX untuk lingkup eksplorasi ini (2026-11-17). Ini adalah keputusan penerimaan PI, bukan verifikasi independen atas otoritas penerbit atau hak publikasi.
+- [x] PI menerima validasi parser/struktur yang tersedia sebagai cukup untuk lingkup pilot dan menutup tindak lanjut validasi XSD penuh serta review modeler BPMN khusus (2026-11-17). Pemeriksaan tersebut tidak diklaim telah dilakukan.
+- [x] Atas arahan PI (2026-11-17), rebuild kedua BPMN mengikuti `data/bpmn/template_contoh.bpmn`; isi proses, ID elemen stabil, kondisi, dan provenance SOP dipertahankan. Model ID naik ke v2; v1 dan checksum persetujuannya tercatat sebagai revisi sebelumnya.
+- [x] Validasi lokal v2 lulus: 40 tes, parser/referensi BPMN, ID unik, kondisi/cabang, traceability lengkap, pra-ingest 43 node/70 relasi tanpa elemen tak didukung, serta build ulang deterministik.
+- [x] Seluruh graph data database proyek `neo4j` dikosongkan atas arahan eksplisit PI: 43 node/70 relasi menjadi 0/0. Laporan: `results/m2/database_reset_report.json`; indeks, konstrain, volume, autentikasi, dan konfigurasi dipertahankan.
+- [x] Ingest v2 ke database kosong berhasil: 43 node/70 relasi, provenance sesuai checksum, tanpa duplikasi; rerun idempoten lulus. Run dan laporan: `results/m2/ingestion_report.json`.
+- [x] Smoke GraphRAG baca-saja menemukan evidence untuk kedua SOP tanpa panggilan LLM; `results/m4/graphrag_local_smoke.json`.
+- [ ] Review PI atas tampilan dan model BPMN v2 sebelum status v2 dibekukan; manifest saat ini `PENDING_REVIEW`.
 
-**Status saat ini:** kedua BPMN disetujui PI dan dibekukan pada 2026-11-17; keduanya telah di-ingest ke Neo4j Compose proyek. Validasi graph lulus: 43 node, 70 relasi, semua akhir proses terjangkau, kondisi/cabang bawaan dan provenance cocok, serta rerun tidak menggandakan data. Nomor resmi/izin pemilik dan otoritas versi sumber belum dipastikan. Validasi XSD penuh, modeler BPMN khusus, serta backup/restore belum dilakukan. Flowchart visual bukan prasyarat.
+**Status saat ini:** model v1 tetap tercatat sebagai revisi semantik yang sebelumnya disetujui. BPMN v2 berbasis template telah dibangun, divalidasi, dan di-ingest setelah seluruh graph data database `neo4j` dihapus atas arahan PI; graph v2 berisi 43 node/70 relasi dan lolos smoke baca-saja tanpa LLM. Status v2 menunggu review PI terhadap artefak visual sebelum dibekukan. Penerimaan sumber dan penutupan validasi tambahan tetap merupakan keputusan lingkup, bukan klaim verifikasi independen atau pemeriksaan tambahan. Flowchart visual bukan prasyarat.
 
 ## M3 — Text-to-Cypher dan Generasi Jawaban (implementasi GraphRAG; gerbang database/LLM terbuka)
 

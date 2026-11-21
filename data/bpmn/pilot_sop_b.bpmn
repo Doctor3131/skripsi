@@ -1,2 +1,117 @@
 <?xml version='1.0' encoding='utf-8'?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_aktif_setelah_cuti" targetNamespace="https://fsm.undip.ac.id/graphrag/bpmn/pilot/aktif-setelah-cuti/v1" exporter="FSM GraphRAG deterministic pilot generator" exporterVersion="0.1"><bpmn:process id="Process_AktifSetelahCuti" name="Permohonan Izin Aktif Kuliah Setelah Cuti" isExecutable="false"><bpmn:documentation>ID SOP proyek: FSM-SOP-AKTIF-SETELAH-CUTI. ID model: FSM-SOP-AKTIF-SETELAH-CUTI-BPMN-v1. Versi sumber: header-created-2024-12-24_revision-2025-08-01. PDF acuan: SOP_Permohonan_Izin_Aktif_Setelah_Cuti.pdf (SHA-256 2846e3e6e730d0e403a9652ebc8c0c53d4bc896508840b73979d39954f7b2495). Tabel pelengkap: SOP Permohonan Izin Aktif Setelah Cuti_rev.docx (SHA-256 2ab067f49d9d23614f264285f358b48f7efaa585b186af13fcfe553423f0e4d0). Durasi pada PDF: sekitar lima menit per langkah yang tercantum. Nama proses mengikuti pilihan PI. Judul sumber PDF/DOCX yang dipasangkan adalah Permohonan Izin Aktif Setelah Cuti. PDF menjadi acuan urutan; tabel DOCX melengkapi informasi pelaksana dan menampilkan status aktif sebagai hasil.</bpmn:documentation><bpmn:laneSet id="LaneSet_aktif_setelah_cuti"><bpmn:lane id="Lane_MahasiswaAktif" name="Mahasiswa"><bpmn:flowNodeRef>Start_Aktif</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_Lapor</bpmn:flowNodeRef><bpmn:flowNodeRef>Task_RegistrasiSSO</bpmn:flowNodeRef><bpmn:flowNodeRef>End_Aktif</bpmn:flowNodeRef></bpmn:lane></bpmn:laneSet><bpmn:startEvent id="Start_Aktif" name="Proses pengaktifan kembali dimulai"><bpmn:documentation>Penanda awal proses untuk memodelkan langkah SOP.</bpmn:documentation></bpmn:startEvent><bpmn:userTask id="Task_Lapor" name="Melapor kepada Ketua Program Studi dan Subbag Akademik dan Kemahasiswaan"><bpmn:documentation>Mahasiswa membawa Surat Izin Cuti dan fotokopi KTM.</bpmn:documentation><bpmn:ioSpecification id="Io_Task_Lapor"><bpmn:dataInputs id="Inputs_Task_Lapor"><bpmn:dataInput id="Input_BerkasAktif" name="Berkas untuk pelaporan" /></bpmn:dataInputs><bpmn:inputSets id="InputSets_Task_Lapor"><bpmn:inputSet id="InputSet_Task_Lapor"><bpmn:dataInputRefs>Input_BerkasAktif</bpmn:dataInputRefs></bpmn:inputSet></bpmn:inputSets><bpmn:outputSets id="OutputSets_Task_Lapor"><bpmn:outputSet id="OutputSet_Task_Lapor" /></bpmn:outputSets></bpmn:ioSpecification><bpmn:dataInputAssociation id="DA_Task_Lapor_Input_BerkasAktif"><bpmn:sourceRef>Ref_BerkasAktif</bpmn:sourceRef><bpmn:targetRef>Input_BerkasAktif</bpmn:targetRef></bpmn:dataInputAssociation></bpmn:userTask><bpmn:userTask id="Task_RegistrasiSSO" name="Melakukan registrasi daring melalui SSO masing-masing mahasiswa"><bpmn:documentation>Durasi yang tercantum pada sumber: sekitar lima menit.</bpmn:documentation></bpmn:userTask><bpmn:endEvent id="End_Aktif" name="Terdaftar sebagai peserta kuliah atau mahasiswa aktif di fakultas"><bpmn:documentation>PDF menomori status ini sebagai langkah 3; tabel DOCX menempatkannya sebagai hasil. Draf memodelkannya sebagai hasil akhir.</bpmn:documentation></bpmn:endEvent><bpmn:sequenceFlow id="Flow_Aktif_00_01" sourceRef="Start_Aktif" targetRef="Task_Lapor"><bpmn:documentation>Batas proses</bpmn:documentation></bpmn:sequenceFlow><bpmn:sequenceFlow id="Flow_Aktif_01_02" sourceRef="Task_Lapor" targetRef="Task_RegistrasiSSO" /><bpmn:sequenceFlow id="Flow_Aktif_02_03" sourceRef="Task_RegistrasiSSO" targetRef="End_Aktif"><bpmn:documentation>Status aktif adalah hasil yang disebut sumber, bukan aktivitas kantor tambahan.</bpmn:documentation></bpmn:sequenceFlow><bpmn:dataObject id="Object_BerkasAktif" name="Surat Izin Cuti dan fotokopi Kartu Tanda Mahasiswa (KTM)" /><bpmn:dataObjectReference id="Ref_BerkasAktif" dataObjectRef="Object_BerkasAktif" name="Surat Izin Cuti dan fotokopi Kartu Tanda Mahasiswa (KTM)" /></bpmn:process><bpmn:collaboration id="Collaboration_aktif_setelah_cuti"><bpmn:participant id="Participant_aktif_setelah_cuti" name="Permohonan Izin Aktif Kuliah Setelah Cuti" processRef="Process_AktifSetelahCuti" /></bpmn:collaboration><bpmndi:BPMNDiagram id="Diagram_aktif_setelah_cuti"><bpmndi:BPMNPlane id="Plane_aktif_setelah_cuti" bpmnElement="Process_AktifSetelahCuti"><bpmndi:BPMNShape id="DI_Lane_MahasiswaAktif" bpmnElement="Lane_MahasiswaAktif"><dc:Bounds x="35" y="105" width="1170" height="210" /></bpmndi:BPMNShape><bpmndi:BPMNShape id="DI_Start_Aktif" bpmnElement="Start_Aktif"><dc:Bounds x="210" y="167" width="44" height="44" /></bpmndi:BPMNShape><bpmndi:BPMNShape id="DI_Task_Lapor" bpmnElement="Task_Lapor"><dc:Bounds x="440" y="150" width="190" height="82" /></bpmndi:BPMNShape><bpmndi:BPMNShape id="DI_Task_RegistrasiSSO" bpmnElement="Task_RegistrasiSSO"><dc:Bounds x="670" y="150" width="190" height="82" /></bpmndi:BPMNShape><bpmndi:BPMNShape id="DI_End_Aktif" bpmnElement="End_Aktif"><dc:Bounds x="900" y="167" width="44" height="44" /></bpmndi:BPMNShape><bpmndi:BPMNShape id="DI_Ref_BerkasAktif" bpmnElement="Ref_BerkasAktif"><dc:Bounds x="415" y="255" width="240" height="55" /></bpmndi:BPMNShape><bpmndi:BPMNEdge id="DI_Flow_Aktif_00_01" bpmnElement="Flow_Aktif_00_01"><di:waypoint x="254" y="189" /><di:waypoint x="347" y="189" /><di:waypoint x="347" y="191" /><di:waypoint x="440" y="191" /></bpmndi:BPMNEdge><bpmndi:BPMNEdge id="DI_Flow_Aktif_01_02" bpmnElement="Flow_Aktif_01_02"><di:waypoint x="630" y="191" /><di:waypoint x="650" y="191" /><di:waypoint x="650" y="191" /><di:waypoint x="670" y="191" /></bpmndi:BPMNEdge><bpmndi:BPMNEdge id="DI_Flow_Aktif_02_03" bpmnElement="Flow_Aktif_02_03"><di:waypoint x="860" y="191" /><di:waypoint x="880" y="191" /><di:waypoint x="880" y="189" /><di:waypoint x="900" y="189" /></bpmndi:BPMNEdge><bpmndi:BPMNEdge id="DI_DA_Task_Lapor_Input_BerkasAktif" bpmnElement="DA_Task_Lapor_Input_BerkasAktif"><di:waypoint x="655" y="282" /><di:waypoint x="548" y="282" /><di:waypoint x="548" y="191" /><di:waypoint x="440" y="191" /></bpmndi:BPMNEdge></bpmndi:BPMNPlane></bpmndi:BPMNDiagram></bpmn:definitions>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_aktif_setelah_cuti_v2" targetNamespace="https://fsm.undip.ac.id/graphrag/bpmn/pilot/aktif-setelah-cuti/v2" exporter="FSM GraphRAG deterministic pilot generator" exporterVersion="0.2">
+  <bpmn:process id="Process_AktifSetelahCuti" name="Permohonan Izin Aktif Kuliah Setelah Cuti" isExecutable="false">
+    <bpmn:documentation>ID SOP proyek: FSM-SOP-AKTIF-SETELAH-CUTI. ID model: FSM-SOP-AKTIF-SETELAH-CUTI-BPMN-v2. Versi sumber: header-created-2024-12-24_revision-2025-08-01. PDF acuan: SOP_Permohonan_Izin_Aktif_Setelah_Cuti.pdf (SHA-256 2846e3e6e730d0e403a9652ebc8c0c53d4bc896508840b73979d39954f7b2495). Tabel pelengkap: SOP Permohonan Izin Aktif Setelah Cuti_rev.docx (SHA-256 2ab067f49d9d23614f264285f358b48f7efaa585b186af13fcfe553423f0e4d0). Durasi pada PDF: sekitar lima menit per langkah yang tercantum. Nama proses mengikuti pilihan PI. Judul sumber PDF/DOCX yang dipasangkan adalah Permohonan Izin Aktif Setelah Cuti. PDF menjadi acuan urutan; tabel DOCX melengkapi informasi pelaksana dan menampilkan status aktif sebagai hasil.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_aktif_setelah_cuti">
+      <bpmn:lane id="Lane_MahasiswaAktif" name="Mahasiswa">
+        <bpmn:flowNodeRef>Start_Aktif</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Lapor</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_RegistrasiSSO</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Aktif</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_Aktif" name="Proses pengaktifan kembali dimulai">
+      <bpmn:documentation>Penanda awal proses untuk memodelkan langkah SOP.</bpmn:documentation>
+      <bpmn:outgoing>Flow_Aktif_00_01</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Task_Lapor" name="Melapor kepada Ketua Program Studi dan Subbag Akademik dan Kemahasiswaan">
+      <bpmn:documentation>Mahasiswa membawa Surat Izin Cuti dan fotokopi KTM.</bpmn:documentation>
+      <bpmn:incoming>Flow_Aktif_00_01</bpmn:incoming>
+      <bpmn:outgoing>Flow_Aktif_01_02</bpmn:outgoing>
+      <bpmn:ioSpecification id="Io_Task_Lapor">
+        <bpmn:dataInputs id="Inputs_Task_Lapor">
+          <bpmn:dataInput id="Input_BerkasAktif" name="Berkas untuk pelaporan" />
+        </bpmn:dataInputs>
+        <bpmn:inputSets id="InputSets_Task_Lapor">
+          <bpmn:inputSet id="InputSet_Task_Lapor">
+            <bpmn:dataInputRefs>Input_BerkasAktif</bpmn:dataInputRefs>
+          </bpmn:inputSet>
+        </bpmn:inputSets>
+        <bpmn:outputSets id="OutputSets_Task_Lapor">
+          <bpmn:outputSet id="OutputSet_Task_Lapor" />
+        </bpmn:outputSets>
+      </bpmn:ioSpecification>
+      <bpmn:dataInputAssociation id="DA_Task_Lapor_Input_BerkasAktif">
+        <bpmn:sourceRef>Ref_BerkasAktif</bpmn:sourceRef>
+        <bpmn:targetRef>Input_BerkasAktif</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_RegistrasiSSO" name="Melakukan registrasi daring melalui SSO masing-masing mahasiswa">
+      <bpmn:documentation>Durasi yang tercantum pada sumber: sekitar lima menit.</bpmn:documentation>
+      <bpmn:incoming>Flow_Aktif_01_02</bpmn:incoming>
+      <bpmn:outgoing>Flow_Aktif_02_03</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="End_Aktif" name="Terdaftar sebagai peserta kuliah atau mahasiswa aktif di fakultas">
+      <bpmn:documentation>PDF menomori status ini sebagai langkah 3; tabel DOCX menempatkannya sebagai hasil. Draf memodelkannya sebagai hasil akhir.</bpmn:documentation>
+      <bpmn:incoming>Flow_Aktif_02_03</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_Aktif_00_01" sourceRef="Start_Aktif" targetRef="Task_Lapor">
+      <bpmn:documentation>Batas proses</bpmn:documentation>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Aktif_01_02" sourceRef="Task_Lapor" targetRef="Task_RegistrasiSSO" />
+    <bpmn:sequenceFlow id="Flow_Aktif_02_03" sourceRef="Task_RegistrasiSSO" targetRef="End_Aktif">
+      <bpmn:documentation>Status aktif adalah hasil yang disebut sumber, bukan aktivitas kantor tambahan.</bpmn:documentation>
+    </bpmn:sequenceFlow>
+    <bpmn:dataObject id="Object_BerkasAktif" name="Surat Izin Cuti dan fotokopi Kartu Tanda Mahasiswa (KTM)" />
+    <bpmn:dataObjectReference id="Ref_BerkasAktif" dataObjectRef="Object_BerkasAktif" name="Surat Izin Cuti dan fotokopi Kartu Tanda Mahasiswa (KTM)" />
+  </bpmn:process>
+  <bpmn:collaboration id="Collaboration_aktif_setelah_cuti">
+    <bpmn:participant id="Participant_aktif_setelah_cuti" name="Permohonan Izin Aktif Kuliah Setelah Cuti" processRef="Process_AktifSetelahCuti" />
+  </bpmn:collaboration>
+  <bpmndi:BPMNDiagram id="Diagram_aktif_setelah_cuti">
+    <bpmndi:BPMNPlane id="Plane_aktif_setelah_cuti" bpmnElement="Collaboration_aktif_setelah_cuti">
+      <bpmndi:BPMNShape id="DI_Participant_aktif_setelah_cuti" bpmnElement="Participant_aktif_setelah_cuti" isHorizontal="true">
+        <dc:Bounds x="180" y="80" width="886" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Lane_MahasiswaAktif" bpmnElement="Lane_MahasiswaAktif" isHorizontal="true">
+        <dc:Bounds x="210" y="80" width="856" height="200" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Start_Aktif" bpmnElement="Start_Aktif">
+        <dc:Bounds x="322" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="297" y="200" width="86" height="30" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Task_Lapor" bpmnElement="Task_Lapor">
+        <dc:Bounds x="440" y="137" width="180" height="86" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Task_RegistrasiSSO" bpmnElement="Task_RegistrasiSSO">
+        <dc:Bounds x="645" y="137" width="180" height="86" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_End_Aktif" bpmnElement="End_Aktif">
+        <dc:Bounds x="850" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="825" y="200" width="86" height="30" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_Ref_BerkasAktif" bpmnElement="Ref_BerkasAktif">
+        <dc:Bounds x="440" y="220" width="180" height="48" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DI_Flow_Aktif_00_01" bpmnElement="Flow_Aktif_00_01">
+        <di:waypoint x="358" y="180" />
+        <di:waypoint x="399" y="180" />
+        <di:waypoint x="399" y="180" />
+        <di:waypoint x="440" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_Flow_Aktif_01_02" bpmnElement="Flow_Aktif_01_02">
+        <di:waypoint x="620" y="180" />
+        <di:waypoint x="632" y="180" />
+        <di:waypoint x="632" y="180" />
+        <di:waypoint x="645" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_Flow_Aktif_02_03" bpmnElement="Flow_Aktif_02_03">
+        <di:waypoint x="825" y="180" />
+        <di:waypoint x="838" y="180" />
+        <di:waypoint x="838" y="180" />
+        <di:waypoint x="850" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_DA_Task_Lapor_Input_BerkasAktif" bpmnElement="DA_Task_Lapor_Input_BerkasAktif">
+        <di:waypoint x="530" y="220" />
+        <di:waypoint x="530" y="222" />
+        <di:waypoint x="530" y="222" />
+        <di:waypoint x="530" y="223" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

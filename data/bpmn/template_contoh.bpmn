@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_Legalisir" targetNamespace="urn:skripsi:bpmn:sop:legalisir" exporter="Camunda Modeler" exporterVersion="5.52.0">
+  <bpmn:process id="Process_Legalisir" name="Legalisir Ijazah dan Transkrip" isExecutable="false">
+    <bpmn:documentation>Sumber aktivitas: SOP_Legalisir_Ijazah_Dan_Transkrip.pdf, halaman 1, langkah 1-6. Sumber percabangan: gambar image.png yang dilampirkan, memperlihatkan Y/N dan alur kembali. Posisi simbol pada gambar bergeser. Pertanyaan gateway serta pengembalian ke penyerahan berkas merupakan hasil interpretasi dan perlu dibedakan dari kalimat eksplisit SOP. SLA tertulis pada PDF: maksimal 3 hari kerja. Pool adalah lingkup layanan dengan empat lane peran; alumni bukan unit internal fakultas. Start/end adalah batas proses hasil kurasi. Semantic enrichment dilakukan LLM setelah parsing, tidak disediakan pada file ini.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_Legalisir">
+      <bpmn:lane id="Lane_Alumni" name="Alumni">
+        <bpmn:flowNodeRef>Task_01_SerahkanBerkas</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_06_AmbilDanCatat</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Legalisir</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Start_Legalisir</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Petugas" name="Petugas Subbag Akademik dan Kemahasiswaan">
+        <bpmn:flowNodeRef>Task_02_PeriksaDokumen</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_DokumenSesuai</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_02_BeriCap</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_05_AmbilDanStempel</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Supervisor" name="Supervisor Akademik dan Kemahasiswaan">
+        <bpmn:flowNodeRef>Task_03_PeriksaDanParaf</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Penandatangan" name="Dekan / Wakil Dekan Akademik dan Kemahasiswaan">
+        <bpmn:flowNodeRef>Task_04_TandaTangan</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:task id="Task_01_SerahkanBerkas" name="Menyerahkan berkas pengajuan legalisir">
+      <bpmn:documentation>SOP halaman 1, langkah 1: Alumni menyerahkan foto copy ijazah/transkrip nilai/sertifikat akreditasi program studi beserta surat aslinya kepada petugas Subbag Akademik dan Kemahasiswaan.
+Waktu tertulis: ±5 menit. Output tertulis: Berkas Pengajuan Legalisir.</bpmn:documentation>
+      <bpmn:incoming>Flow_01</bpmn:incoming>
+      <bpmn:incoming>Flow_05_Tidak</bpmn:incoming>
+      <bpmn:outgoing>Flow_02</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_02_PeriksaDokumen" name="Memeriksa keabsahan dan kesesuaian dokumen">
+      <bpmn:documentation>SOP halaman 1, langkah 2: Petugas Subbag Akademik dan Kemahasiswaan memeriksa keabsahan, kesesuaian foto copy ijazah/transkrip nilai/sertifikat akreditasi program studi dengan surat aslinya dan memberikan cap.
+Waktu tertulis: ±10 menit. Output tertulis: Persetujuan Legalisir. Langkah 2 dipecah menjadi pemeriksaan, gateway, dan pemberian cap. Durasi ±10 menit berlaku untuk keseluruhan langkah sumber, bukan durasi masing-masing task hasil pemecahan.</bpmn:documentation>
+      <bpmn:incoming>Flow_02</bpmn:incoming>
+      <bpmn:outgoing>Flow_03</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_DokumenSesuai" name="Dokumen sah dan sesuai aslinya?" gatewayDirection="Diverging">
+      <bpmn:documentation>Gambar sumber memperlihatkan simbol keputusan dengan cabang Y/N; label kondisi tidak terbaca/tidak tersedia. Interpretasi kurasi: keputusan setelah pemeriksaan keabsahan dan kesesuaian pada langkah 2, Ya menuju pemberian cap dan Tidak kembali ke penyerahan berkas. Posisi lane pada gambar tidak dijadikan bukti penanggung jawab; pemeriksaan mengikuti aktor pada teks SOP. Tidak ada aturan perbaikan atau penolakan final yang ditambahkan.</bpmn:documentation>
+      <bpmn:incoming>Flow_03</bpmn:incoming>
+      <bpmn:outgoing>Flow_04_Ya</bpmn:outgoing>
+      <bpmn:outgoing>Flow_05_Tidak</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_02_BeriCap" name="Memberikan cap persetujuan legalisir">
+      <bpmn:documentation>SOP halaman 1, langkah 2: Petugas Subbag Akademik dan Kemahasiswaan memeriksa keabsahan, kesesuaian foto copy ijazah/transkrip nilai/sertifikat akreditasi program studi dengan surat aslinya dan memberikan cap.
+Waktu tertulis: ±10 menit. Output tertulis: Persetujuan Legalisir. Langkah 2 dipecah menjadi pemeriksaan, gateway, dan pemberian cap. Durasi ±10 menit berlaku untuk keseluruhan langkah sumber, bukan durasi masing-masing task hasil pemecahan.</bpmn:documentation>
+      <bpmn:incoming>Flow_04_Ya</bpmn:incoming>
+      <bpmn:outgoing>Flow_06</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_03_PeriksaDanParaf" name="Memeriksa berkas dan memberi paraf supervisor">
+      <bpmn:documentation>SOP halaman 1, langkah 3: Supervisor Akademik dan Kemahasiswaan memeriksa dan memberi paraf di samping kanan nama Dekan.
+Waktu tertulis: ±15 menit. Output tertulis: Paraf Supervisor Akademik dan Kemahasiswaan.</bpmn:documentation>
+      <bpmn:incoming>Flow_06</bpmn:incoming>
+      <bpmn:outgoing>Flow_07</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_04_TandaTangan" name="Menandatangani pengesahan legalisir">
+      <bpmn:documentation>SOP halaman 1, langkah 4: Dekan/Wakil Dekan Akademik dan Kemahasiswaan menandatangani pada “Pengesahan Telah diperiksa Kebenarannya dan Sesuai dengan Aslinya”.
+Waktu tertulis: ±1 hari. Output tertulis: TTD Dekan/Wakil Dekan Akademik dan Kemahasiswaan.</bpmn:documentation>
+      <bpmn:incoming>Flow_07</bpmn:incoming>
+      <bpmn:outgoing>Flow_08</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_05_AmbilDanStempel" name="Mengambil berkas bertanda tangan dan memberi stempel FSM">
+      <bpmn:documentation>SOP halaman 1, langkah 5: Petugas Subbag Akademik dan Kemahasiswaan mengambil kembali Legalisir yang sudah ditanda tangani Dekan / Wakil Dekan Akademik dan Kemahasiswaan dan memberikan stempel Fakultas Sains dan Matematika.
+Waktu tertulis: ±5 menit. Output tertulis: Stempel Fakultas Sains dan Matematika.</bpmn:documentation>
+      <bpmn:incoming>Flow_08</bpmn:incoming>
+      <bpmn:outgoing>Flow_09</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_06_AmbilDanCatat" name="Mengambil legalisir, mengisi dan menandatangani buku pengambilan">
+      <bpmn:documentation>SOP halaman 1, langkah 6: Alumni mengambil Legalisir di Subbag Akademik dan Kemahasiswaan dengan membawa aslinya dan menulis di buku pengambilan dan di tanda tangani ybs.
+Waktu tertulis: ±15 menit. Output tertulis: Legalisir Ijazah/transkrip nilai/sertifikat akreditasi.</bpmn:documentation>
+      <bpmn:incoming>Flow_09</bpmn:incoming>
+      <bpmn:outgoing>Flow_10</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="End_Legalisir" name="Legalisir telah diambil">
+      <bpmn:documentation>Batas proses hasil kurasi, berdasarkan langkah 6.</bpmn:documentation>
+      <bpmn:incoming>Flow_10</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:startEvent id="Start_Legalisir" name="Mulai pengajuan legalisir">
+      <bpmn:documentation>Batas proses hasil kurasi, berdasarkan langkah 1.</bpmn:documentation>
+      <bpmn:outgoing>Flow_01</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_01" sourceRef="Start_Legalisir" targetRef="Task_01_SerahkanBerkas" />
+    <bpmn:sequenceFlow id="Flow_05_Tidak" name="Tidak" sourceRef="Gateway_DokumenSesuai" targetRef="Task_01_SerahkanBerkas">
+      <bpmn:documentation>Cabang Tidak dari Y/N pada gambar; makna kondisi dan tujuan alur dipetakan melalui interpretasi terhadap langkah 2 SOP.</bpmn:documentation>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="urn:curation:natural-language:id">Dokumen tidak sah atau tidak sesuai dengan aslinya</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_02" sourceRef="Task_01_SerahkanBerkas" targetRef="Task_02_PeriksaDokumen" />
+    <bpmn:sequenceFlow id="Flow_03" sourceRef="Task_02_PeriksaDokumen" targetRef="Gateway_DokumenSesuai" />
+    <bpmn:sequenceFlow id="Flow_04_Ya" name="Ya" sourceRef="Gateway_DokumenSesuai" targetRef="Task_02_BeriCap">
+      <bpmn:documentation>Cabang Ya dari Y/N pada gambar; makna kondisi dan tujuan alur dipetakan melalui interpretasi terhadap langkah 2 SOP.</bpmn:documentation>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="urn:curation:natural-language:id">Dokumen sah dan sesuai dengan aslinya</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_06" sourceRef="Task_02_BeriCap" targetRef="Task_03_PeriksaDanParaf" />
+    <bpmn:sequenceFlow id="Flow_07" sourceRef="Task_03_PeriksaDanParaf" targetRef="Task_04_TandaTangan" />
+    <bpmn:sequenceFlow id="Flow_08" sourceRef="Task_04_TandaTangan" targetRef="Task_05_AmbilDanStempel" />
+    <bpmn:sequenceFlow id="Flow_09" sourceRef="Task_05_AmbilDanStempel" targetRef="Task_06_AmbilDanCatat" />
+    <bpmn:sequenceFlow id="Flow_10" sourceRef="Task_06_AmbilDanCatat" targetRef="End_Legalisir" />
+  </bpmn:process>
+  <bpmn:collaboration id="Collaboration_Legalisir">
+    <bpmn:participant id="Participant_LayananLegalisir" name="Layanan Legalisir" processRef="Process_Legalisir" />
+  </bpmn:collaboration>
+  <bpmndi:BPMNDiagram id="Diagram_Legalisir">
+    <bpmndi:BPMNPlane id="Plane_Legalisir" bpmnElement="Collaboration_Legalisir">
+      <bpmndi:BPMNShape id="Participant_LayananLegalisir_di" bpmnElement="Participant_LayananLegalisir" isHorizontal="true">
+        <dc:Bounds x="180" y="80" width="1990" height="640" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Alumni_di" bpmnElement="Lane_Alumni" isHorizontal="true">
+        <dc:Bounds x="210" y="80" width="1960" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Petugas_di" bpmnElement="Lane_Petugas" isHorizontal="true">
+        <dc:Bounds x="210" y="240" width="1960" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Supervisor_di" bpmnElement="Lane_Supervisor" isHorizontal="true">
+        <dc:Bounds x="210" y="400" width="1960" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Penandatangan_di" bpmnElement="Lane_Penandatangan" isHorizontal="true">
+        <dc:Bounds x="210" y="560" width="1960" height="160" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_01_SerahkanBerkas_di" bpmnElement="Task_01_SerahkanBerkas">
+        <dc:Bounds x="440" y="117" width="180" height="86" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_02_PeriksaDokumen_di" bpmnElement="Task_02_PeriksaDokumen">
+        <dc:Bounds x="665" y="277" width="180" height="86" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_DokumenSesuai_di" bpmnElement="Gateway_DokumenSesuai" isMarkerVisible="true">
+        <dc:Bounds x="890" y="295" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="870" y="353" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_02_BeriCap_di" bpmnElement="Task_02_BeriCap">
+        <dc:Bounds x="985" y="277" width="180" height="86" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_03_PeriksaDanParaf_di" bpmnElement="Task_03_PeriksaDanParaf">
+        <dc:Bounds x="1190" y="437" width="180" height="86" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_04_TandaTangan_di" bpmnElement="Task_04_TandaTangan">
+        <dc:Bounds x="1395" y="597" width="180" height="86" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_05_AmbilDanStempel_di" bpmnElement="Task_05_AmbilDanStempel">
+        <dc:Bounds x="1600" y="277" width="180" height="86" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_06_AmbilDanCatat_di" bpmnElement="Task_06_AmbilDanCatat">
+        <dc:Bounds x="1805" y="117" width="180" height="86" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Legalisir_di" bpmnElement="End_Legalisir">
+        <dc:Bounds x="2062" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2027" y="186" width="106" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_Legalisir_di" bpmnElement="Start_Legalisir">
+        <dc:Bounds x="322" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="279" y="186" width="122" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_01_di" bpmnElement="Flow_01">
+        <di:waypoint x="358" y="160" />
+        <di:waypoint x="440" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_05_Tidak_di" bpmnElement="Flow_05_Tidak">
+        <di:waypoint x="915" y="295" />
+        <di:waypoint x="915" y="95" />
+        <di:waypoint x="530" y="95" />
+        <di:waypoint x="530" y="117" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="926" y="153" width="27" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_02_di" bpmnElement="Flow_02">
+        <di:waypoint x="620" y="160" />
+        <di:waypoint x="642.5" y="160" />
+        <di:waypoint x="642.5" y="320" />
+        <di:waypoint x="665" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_03_di" bpmnElement="Flow_03">
+        <di:waypoint x="845" y="320" />
+        <di:waypoint x="890" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_04_Ya_di" bpmnElement="Flow_04_Ya">
+        <di:waypoint x="940" y="320" />
+        <di:waypoint x="985" y="320" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="953" y="303" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_06_di" bpmnElement="Flow_06">
+        <di:waypoint x="1165" y="320" />
+        <di:waypoint x="1177.5" y="320" />
+        <di:waypoint x="1177.5" y="480" />
+        <di:waypoint x="1190" y="480" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_07_di" bpmnElement="Flow_07">
+        <di:waypoint x="1370" y="480" />
+        <di:waypoint x="1382.5" y="480" />
+        <di:waypoint x="1382.5" y="640" />
+        <di:waypoint x="1395" y="640" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_08_di" bpmnElement="Flow_08">
+        <di:waypoint x="1575" y="640" />
+        <di:waypoint x="1587.5" y="640" />
+        <di:waypoint x="1587.5" y="320" />
+        <di:waypoint x="1600" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_09_di" bpmnElement="Flow_09">
+        <di:waypoint x="1780" y="320" />
+        <di:waypoint x="1792.5" y="320" />
+        <di:waypoint x="1792.5" y="160" />
+        <di:waypoint x="1805" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10_di" bpmnElement="Flow_10">
+        <di:waypoint x="1985" y="160" />
+        <di:waypoint x="2062" y="160" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

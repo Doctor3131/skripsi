@@ -15,11 +15,11 @@ DI_NS = {"di": "http://www.omg.org/spec/BPMN/20100524/DI"}
 @pytest.mark.parametrize(
     ("filename", "process_id", "model_id"),
     [
-        ("pilot_sop_a.bpmn", "Process_CutiAkademik", "FSM-SOP-CUTI-AKADEMIK-BPMN-v1"),
+        ("pilot_sop_a.bpmn", "Process_CutiAkademik", "FSM-SOP-CUTI-AKADEMIK-BPMN-v2"),
         (
             "pilot_sop_b.bpmn",
             "Process_AktifSetelahCuti",
-            "FSM-SOP-AKTIF-SETELAH-CUTI-BPMN-v1",
+            "FSM-SOP-AKTIF-SETELAH-CUTI-BPMN-v2",
         ),
     ],
 )
@@ -84,6 +84,32 @@ def test_pilot_files_include_bpmn_di_and_valid_svg_previews() -> None:
     for stem in ("pilot_sop_a", "pilot_sop_b"):
         bpmn = VAULT_ROOT / "data" / "bpmn" / f"{stem}.bpmn"
         root = ET.parse(bpmn).getroot()
-        assert root.find("di:BPMNDiagram/di:BPMNPlane", DI_NS) is not None
+        plane = root.find("di:BPMNDiagram/di:BPMNPlane", DI_NS)
+        assert plane is not None
+        assert plane.get("bpmnElement", "").startswith("Collaboration_")
+        participant_shapes = [
+            shape
+            for shape in plane.findall("di:BPMNShape", DI_NS)
+            if (shape.get("bpmnElement") or "").startswith("Participant_")
+        ]
+        assert len(participant_shapes) == 1
         svg = VAULT_ROOT / "data" / "diagram" / f"{stem}.svg"
         assert ET.parse(svg).getroot().tag == "{http://www.w3.org/2000/svg}svg"
+
+
+def test_cuti_io_references_and_flow_node_references_are_complete() -> None:
+    root = ET.parse(VAULT_ROOT / "data" / "bpmn" / "pilot_sop_a.bpmn").getroot()
+    process = root.find("b:process", BPMN_NS)
+    assert process is not None
+    for association in process.findall("b:userTask/b:dataInputAssociation", BPMN_NS):
+        assert association.find("b:sourceRef", BPMN_NS) is not None
+        assert association.find("b:targetRef", BPMN_NS) is not None
+    for flow in process.findall("b:sequenceFlow", BPMN_NS):
+        source_id, target_id = flow.get("sourceRef"), flow.get("targetRef")
+        source = process.find(f".//*[@id='{source_id}']", BPMN_NS)
+        target = process.find(f".//*[@id='{target_id}']", BPMN_NS)
+        assert source is not None and target is not None
+        source_flows = [item.text for item in source.findall("b:outgoing", BPMN_NS)]
+        target_flows = [item.text for item in target.findall("b:incoming", BPMN_NS)]
+        assert flow.get("id") in source_flows
+        assert flow.get("id") in target_flows

@@ -9,6 +9,7 @@ import html
 import json
 import textwrap
 import xml.etree.ElementTree as ET
+from functools import lru_cache
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -64,11 +65,11 @@ MODELS = [
         "file": "pilot_sop_a.bpmn",
         "preview": "pilot_sop_a.svg",
         "sop_id": "FSM-SOP-CUTI-AKADEMIK",
-        "model_id": "FSM-SOP-CUTI-AKADEMIK-BPMN-v1",
+        "model_id": "FSM-SOP-CUTI-AKADEMIK-BPMN-v2",
         "title": "Permohonan Izin Cuti Akademik",
         "source_title": "Permohonan Izin Cuti Akademik",
         "process_id": "Process_CutiAkademik",
-        "namespace": "https://fsm.undip.ac.id/graphrag/bpmn/pilot/cuti-akademik/v1",
+        "namespace": "https://fsm.undip.ac.id/graphrag/bpmn/pilot/cuti-akademik/v2",
         "duration": "Waktu pemrosesan maksimal: tiga hari kerja.",
         "source_notes": (
             "PDF menjadi acuan urutan dan kondisi. Tabel DOCX melengkapi informasi pelaksana. "
@@ -216,7 +217,7 @@ MODELS = [
                 "name": "Mahasiswa memilih mengambil surat di loket?",
                 "step": "Langkah 8",
                 "lane": "Lane_Mahasiswa",
-                "documentation": "Kata ‘dapat’ ditafsirkan sebagai pilihan; tafsir ini perlu review PI.",
+                "documentation": "Kata ‘dapat’ ditafsirkan sebagai pilihan; PI menyetujui tafsir ini pada 2026-11-17.",
                 "default_flow_id": "Flow_Cuti_TidakDiambil",
             },
             _task(
@@ -313,7 +314,7 @@ MODELS = [
                 "Task_AmbilSuratCuti",
                 "mahasiswa memilih mengambil surat di loket",
                 "Langkah 8",
-                "Pilihan ini ditafsirkan dari kata ‘dapat’; perlu review PI.",
+                "Pilihan ini ditafsirkan dari kata ‘dapat’; PI menyetujui tafsir ini pada 2026-11-17.",
             ),
             (
                 "Flow_Cuti_TidakDiambil",
@@ -347,9 +348,9 @@ MODELS = [
             },
             {
                 "id": "Flow_Cuti_PilihDiambil",
-                "type": "OPTIONALITY_INFERRED_FOR_REVIEW",
+                "type": "OPTIONALITY_INFERRED_APPROVED_BY_PI",
                 "location": "PDF halaman 1, langkah 8 (‘Mahasiswa dapat mengambil’) dan langkah 7",
-                "note": "Draf menafsirkan ‘dapat’ sebagai aktivitas pilihan; jalur default selesai setelah surat dikirim. PI perlu meninjau tafsir ini.",
+                "note": "‘Dapat’ dimodelkan sebagai aktivitas pilihan; jalur default selesai setelah surat dikirim. PI menyetujui tafsir ini pada 2026-11-17.",
             },
         ],
     },
@@ -358,11 +359,11 @@ MODELS = [
         "file": "pilot_sop_b.bpmn",
         "preview": "pilot_sop_b.svg",
         "sop_id": "FSM-SOP-AKTIF-SETELAH-CUTI",
-        "model_id": "FSM-SOP-AKTIF-SETELAH-CUTI-BPMN-v1",
+        "model_id": "FSM-SOP-AKTIF-SETELAH-CUTI-BPMN-v2",
         "title": "Permohonan Izin Aktif Kuliah Setelah Cuti",
         "source_title": "Permohonan Izin Aktif Setelah Cuti",
         "process_id": "Process_AktifSetelahCuti",
-        "namespace": "https://fsm.undip.ac.id/graphrag/bpmn/pilot/aktif-setelah-cuti/v1",
+        "namespace": "https://fsm.undip.ac.id/graphrag/bpmn/pilot/aktif-setelah-cuti/v2",
         "duration": "Durasi pada PDF: sekitar lima menit per langkah yang tercantum.",
         "source_notes": (
             "Nama proses mengikuti pilihan PI. Judul sumber PDF/DOCX yang dipasangkan adalah "
@@ -517,47 +518,108 @@ def _write_io_spec(task_el: ET.Element, task: dict, model: dict, associations: l
         )
 
 
+@lru_cache(maxsize=1)
+def _template_dimensions() -> dict[str, tuple[int, int]]:
+    """Ambil ukuran shape dasar dari contoh Camunda yang disediakan PI."""
+    path = VAULT / "data/bpmn/template_contoh.bpmn"
+    root = ET.parse(path).getroot()
+    sizes = {}
+    for shape in root.findall(".//bpmndi:BPMNShape", NS):
+        element_id = shape.get("bpmnElement", "")
+        if not element_id.startswith(("Task_", "Gateway_", "Start_", "End_")):
+            continue
+        bounds = shape.find("dc:Bounds", NS)
+        if bounds is not None:
+            kind = (
+                "gateway"
+                if element_id.startswith("Gateway_")
+                else "event"
+                if element_id.startswith(("Start_", "End_"))
+                else "task"
+            )
+            sizes.setdefault(
+                kind, (int(float(bounds.get("width", "0"))), int(float(bounds.get("height", "0"))))
+            )
+    lane_shape = root.find(".//bpmndi:BPMNShape[@bpmnElement='Lane_Alumni']/dc:Bounds", NS)
+    if lane_shape is None or not {"task", "gateway", "event"} <= sizes.keys():
+        raise ValueError(f"Template BPMN tidak memiliki geometri yang diperlukan: {path}")
+    sizes["lane"] = (
+        int(float(lane_shape.get("width", "0"))),
+        int(float(lane_shape.get("height", "0"))),
+    )
+    return sizes
+
+
 def _positions(model: dict) -> tuple[dict, dict, int, int]:
-    lane_top = {lane["id"]: 105 + index * 225 for index, lane in enumerate(model["lanes"])}
+    """Susun node dengan proporsi pool, lane, dan shape dari template BPMN."""
+    dims = _template_dimensions()
+    lane_height = max(dims["lane"][1], 200 if model["data_objects"] else dims["lane"][1])
+    lane_top = {lane["id"]: 80 + index * lane_height for index, lane in enumerate(model["lanes"])}
+    depth = {node["id"]: 0 for node in model["nodes"] if node["tag"] == "startEvent"}
+    for _ in range(len(model["nodes"])):
+        changed = False
+        for _flow_id, source_id, target_id, *_ in model["flows"]:
+            if source_id in depth:
+                candidate = depth[source_id] + 1
+                if candidate > depth.get(target_id, -1):
+                    depth[target_id] = candidate
+                    changed = True
+        if not changed:
+            break
+
     positions = {}
-    for index, node in enumerate(model["nodes"]):
+    grouped: dict[tuple[str, int], list[dict]] = {}
+    for node in model["nodes"]:
         lane_id = node.get("lane") or model["lanes"][0]["id"]
+        grouped.setdefault((lane_id, depth.get(node["id"], 0)), []).append(node)
+    for (lane_id, layer), group in grouped.items():
         top = lane_top[lane_id]
-        is_event = node["tag"] in {"startEvent", "endEvent"}
-        is_gateway = node["tag"].endswith("Gateway")
-        width = 44 if is_event else 70 if is_gateway else 190
-        height = 44 if is_event else 70 if is_gateway else 82
-        x = 210 + index * 230
-        y = top + (45 if height == 82 else 49 if is_gateway else 62)
-        if node["id"] == "End_Cuti_Terkirim":
-            y = top + 141
-        positions[node["id"]] = {"x": x, "y": y, "w": width, "h": height, "lane": lane_id}
-    # Dokumen berada di lane aktivitas yang pertama kali menggunakan atau menghasilkan.
-    node_positions = positions
+        x = 322 if layer == 0 else 440 + (layer - 1) * 205
+        for index, node in enumerate(group):
+            kind = (
+                "event"
+                if node["tag"] in {"startEvent", "endEvent"}
+                else "gateway"
+                if node["tag"].endswith("Gateway")
+                else "task"
+            )
+            width, height = dims[kind]
+            if len(group) > 1:
+                y = top + (24 if index == 0 else lane_height - height - 8)
+            else:
+                y = top + (lane_height - height) // 2
+            positions[node["id"]] = {"x": x, "y": y, "w": width, "h": height, "lane": lane_id}
+
     for artifact in model["data_objects"]:
-        parent = node_positions[artifact["after"]]
+        parent = positions[artifact["after"]]
         positions[artifact["id"]] = {
-            "x": parent["x"] - 25,
-            "y": lane_top[parent["lane"]] + 150,
-            "w": 240,
-            "h": 55,
+            "x": parent["x"],
+            "y": lane_top[parent["lane"]] + lane_height - 60,
+            "w": 180,
+            "h": 48,
             "lane": parent["lane"],
+            "kind": "data",
         }
-    width = 210 + len(model["nodes"]) * 230 + 110
-    height = 105 + len(model["lanes"]) * 225 + 50
+    max_right = max(pos["x"] + pos["w"] for pos in positions.values())
+    width = max_right + 180
+    height = 80 + len(model["lanes"]) * lane_height + 60
     return positions, lane_top, width, height
 
 
 def build_xml(model: dict, inventory: dict[str, dict]) -> tuple[bytes, list[dict]]:
     source = inventory[model["sop_id"]]
-    definitions = ET.Element(
-        q("bpmn", "definitions"),
+    # Gunakan definitions dari template sebagai skeleton XML, tanpa membawa
+    # proses legalisir atau fakta SOP yang terkandung di dalamnya.
+    definitions = ET.parse(VAULT / "data/bpmn/template_contoh.bpmn").getroot()
+    for child in list(definitions):
+        definitions.remove(child)
+    definitions.attrib.update(
         {
-            "id": f"Definitions_{model['key']}",
+            "id": f"Definitions_{model['key']}_v2",
             "targetNamespace": model["namespace"],
             "exporter": "FSM GraphRAG deterministic pilot generator",
-            "exporterVersion": "0.1",
-        },
+            "exporterVersion": "0.2",
+        }
     )
     process = element(
         definitions,
@@ -580,6 +642,11 @@ def build_xml(model: dict, inventory: dict[str, dict]) -> tuple[bytes, list[dict
         lane_el = element(lane_set, "lane", {"id": lane["id"], "name": lane["name"]})
         for node_id in lane["nodes"]:
             element(lane_el, "flowNodeRef", text=node_id)
+    incoming = {node["id"]: [] for node in model["nodes"]}
+    outgoing = {node["id"]: [] for node in model["nodes"]}
+    for flow_id, source_id, target_id, *_ in model["flows"]:
+        outgoing[source_id].append(flow_id)
+        incoming[target_id].append(flow_id)
     associations: list[dict] = []
     for node in model["nodes"]:
         attrs = {"id": node["id"], "name": node["name"]}
@@ -588,6 +655,10 @@ def build_xml(model: dict, inventory: dict[str, dict]) -> tuple[bytes, list[dict
         node_el = element(process, node["tag"], attrs)
         if node.get("documentation"):
             element(node_el, "documentation", text=node["documentation"])
+        for flow_id in incoming[node["id"]]:
+            element(node_el, "incoming", text=flow_id)
+        for flow_id in outgoing[node["id"]]:
+            element(node_el, "outgoing", text=flow_id)
         if node["tag"] in {"userTask", "task"}:
             _write_io_spec(node_el, node, model, associations)
     for flow in model["flows"]:
@@ -629,12 +700,14 @@ def build_xml(model: dict, inventory: dict[str, dict]) -> tuple[bytes, list[dict
         )
 
     # Kolaborasi satu pool untuk menunjukkan nama prosedur tanpa menambahkan pelaksana baru.
-    collaboration = element(definitions, "collaboration", {"id": f"Collaboration_{model['key']}"})
+    collaboration_id = f"Collaboration_{model['key']}"
+    collaboration = element(definitions, "collaboration", {"id": collaboration_id})
+    participant_id = f"Participant_{model['key']}"
     element(
         collaboration,
         "participant",
         {
-            "id": f"Participant_{model['key']}",
+            "id": participant_id,
             "name": model["title"],
             "processRef": model["process_id"],
         },
@@ -647,23 +720,44 @@ def build_xml(model: dict, inventory: dict[str, dict]) -> tuple[bytes, list[dict
     plane = ET.SubElement(
         diagram,
         q("bpmndi", "BPMNPlane"),
-        {"id": f"Plane_{model['key']}", "bpmnElement": model["process_id"]},
+        {"id": f"Plane_{model['key']}", "bpmnElement": collaboration_id},
+    )
+    lane_height = max(
+        _template_dimensions()["lane"][1],
+        200 if model["data_objects"] else _template_dimensions()["lane"][1],
+    )
+    participant = ET.SubElement(
+        plane,
+        q("bpmndi", "BPMNShape"),
+        {"id": f"DI_{participant_id}", "bpmnElement": participant_id, "isHorizontal": "true"},
+    )
+    ET.SubElement(
+        participant,
+        q("dc", "Bounds"),
+        {
+            "x": "180",
+            "y": "80",
+            "width": str(canvas_width - 180),
+            "height": str(len(model["lanes"]) * lane_height),
+        },
     )
     for lane in model["lanes"]:
+        shape = ET.SubElement(
+            plane,
+            q("bpmndi", "BPMNShape"),
+            {"id": f"DI_{lane['id']}", "bpmnElement": lane["id"], "isHorizontal": "true"},
+        )
         ET.SubElement(
-            ET.SubElement(
-                plane,
-                q("bpmndi", "BPMNShape"),
-                {"id": f"DI_{lane['id']}", "bpmnElement": lane["id"]},
-            ),
+            shape,
             q("dc", "Bounds"),
             {
-                "x": "35",
+                "x": "210",
                 "y": str(lane_top[lane["id"]]),
-                "width": str(canvas_width - 70),
-                "height": "210",
+                "width": str(canvas_width - 210),
+                "height": str(lane_height),
             },
         )
+        ET.SubElement(shape, q("bpmndi", "BPMNLabel"))
     for node in model["nodes"]:
         pos = positions[node["id"]]
         shape = ET.SubElement(
@@ -671,6 +765,8 @@ def build_xml(model: dict, inventory: dict[str, dict]) -> tuple[bytes, list[dict
             q("bpmndi", "BPMNShape"),
             {"id": f"DI_{node['id']}", "bpmnElement": node["id"]},
         )
+        if node["tag"].endswith("Gateway"):
+            shape.set("isMarkerVisible", "true")
         ET.SubElement(
             shape,
             q("dc", "Bounds"),
@@ -681,6 +777,18 @@ def build_xml(model: dict, inventory: dict[str, dict]) -> tuple[bytes, list[dict
                 "height": str(pos["h"]),
             },
         )
+        if node["tag"] in {"startEvent", "endEvent"} or node["tag"].endswith("Gateway"):
+            label = ET.SubElement(shape, q("bpmndi", "BPMNLabel"))
+            ET.SubElement(
+                label,
+                q("dc", "Bounds"),
+                {
+                    "x": str(pos["x"] - 25),
+                    "y": str(pos["y"] + pos["h"] + 2),
+                    "width": str(pos["w"] + 50),
+                    "height": "30",
+                },
+            )
     for artifact in model["data_objects"]:
         pos = positions[artifact["id"]]
         shape = ET.SubElement(
@@ -702,12 +810,24 @@ def build_xml(model: dict, inventory: dict[str, dict]) -> tuple[bytes, list[dict
     node_positions = positions
     for flow in model["flows"]:
         flow_id, source_id, target_id, condition, _, _ = flow
+        edge_label = ""
+        if condition:
+            edge_label = (
+                "Jika persyaratan lengkap"
+                if flow_id == "Flow_Cuti_Lengkap"
+                else "Jika mahasiswa memilih mengambil surat"
+            )
+        elif flow_id == "Flow_Cuti_TidakDiambil":
+            edge_label = "Surat dikirim; tidak diambil di loket"
+        elif source_id == "Task_SerahkanKeDekan":
+            edge_label = "Kemudian didisposisikan ke Subbag Akademik dan Kemahasiswaan"
         _add_edge(
             plane,
             f"DI_{flow_id}",
             flow_id,
             node_positions[source_id],
             node_positions[target_id],
+            edge_label,
         )
     for association in associations:
         if association["direction"] == "input":
@@ -718,37 +838,51 @@ def build_xml(model: dict, inventory: dict[str, dict]) -> tuple[bytes, list[dict
             target = node_positions[association["target"]]
         _add_edge(plane, f"DI_{association['id']}", association["id"], origin, target)
 
+    ET.indent(definitions, space="  ")
     xml = ET.tostring(definitions, encoding="utf-8", xml_declaration=True)
     # Traceability records are generated from the same source declarations as the BPMN.
     trace = _trace_rows(model, source, associations)
     return xml, trace
 
 
-def _add_edge(parent: ET.Element, edge_id: str, bpmn_id: str, source: dict, target: dict) -> None:
-    edge = ET.SubElement(
-        parent,
-        q("bpmndi", "BPMNEdge"),
-        {"id": edge_id, "bpmnElement": bpmn_id},
-    )
+def _edge_points(source: dict, target: dict, vertical: bool = False) -> list[tuple[float, float]]:
+    if vertical:
+        sx = source["x"] + source["w"] / 2
+        tx = target["x"] + target["w"] / 2
+        sy = source["y"] if source["y"] > target["y"] else source["y"] + source["h"]
+        ty = target["y"] + target["h"] if source["y"] > target["y"] else target["y"]
+        midy = (sy + ty) / 2
+        return [(sx, sy), (sx, midy), (tx, midy), (tx, ty)]
     sx = source["x"] + source["w"]
-    sy = source["y"] + source["h"] / 2
     tx = target["x"]
+    if tx < sx:
+        sx, tx = source["x"], target["x"] + target["w"]
+    sy = source["y"] + source["h"] / 2
     ty = target["y"] + target["h"] / 2
-    if bpmn_id == "Flow_Cuti_TidakDiambil":
-        route_y = max(sy, ty) + 18
-        points = [
-            (sx, sy),
-            (sx + 35, sy),
-            (sx + 35, route_y),
-            (tx - 20, route_y),
-            (tx - 20, ty),
-            (tx, ty),
-        ]
-    else:
-        midx = (sx + tx) / 2
-        points = [(sx, sy), (midx, sy), (midx, ty), (tx, ty)]
+    midx = (sx + tx) / 2
+    return [(sx, sy), (midx, sy), (midx, ty), (tx, ty)]
+
+
+def _add_edge(
+    parent: ET.Element,
+    edge_id: str,
+    bpmn_id: str,
+    source: dict,
+    target: dict,
+    label: str = "",
+) -> None:
+    edge = ET.SubElement(parent, q("bpmndi", "BPMNEdge"), {"id": edge_id, "bpmnElement": bpmn_id})
+    points = _edge_points(source, target, vertical="kind" in source or "kind" in target)
     for x, y in points:
         ET.SubElement(edge, q("di", "waypoint"), {"x": str(round(x)), "y": str(round(y))})
+    if label:
+        x, y = points[len(points) // 2]
+        label_shape = ET.SubElement(edge, q("bpmndi", "BPMNLabel"))
+        ET.SubElement(
+            label_shape,
+            q("dc", "Bounds"),
+            {"x": str(round(x - 45)), "y": str(round(y - 18)), "width": "130", "height": "28"},
+        )
 
 
 def _trace_rows(model: dict, source: dict, associations: list[dict]) -> list[dict]:
@@ -808,7 +942,7 @@ def _trace_rows(model: dict, source: dict, associations: list[dict]) -> list[dic
                 "status": (
                     "BATAS_PROSES"
                     if node["tag"] in {"startEvent", "endEvent"}
-                    else "OPSIONALITAS_DITAFSIRKAN_PERLU_REVIEW_PI"
+                    else "OPSIONALITAS_DITAFSIRKAN_DISETUJUI_PI"
                     if node["id"] == "Gateway_PilihanPengambilan"
                     else "SESUAI_TEKSTUAL"
                 ),
@@ -838,7 +972,7 @@ def _trace_rows(model: dict, source: dict, associations: list[dict]) -> list[dic
                 "berkas_sumber": pdf,
                 "lokasi_sumber": step or "Batas proses",
                 "status": (
-                    "OPSIONALITAS_DITAFSIRKAN_PERLU_REVIEW_PI"
+                    "OPSIONALITAS_DITAFSIRKAN_DISETUJUI_PI"
                     if flow_id == "Flow_Cuti_PilihDiambil"
                     else "ALUR_BERSYARAT_DIDUKUNG"
                     if condition
@@ -909,36 +1043,34 @@ def _wrap(text: str, width: int) -> list[str]:
 
 def build_svg(model: dict) -> bytes:
     positions, lane_top, width, height = _positions(model)
+    lane_height = max(
+        _template_dimensions()["lane"][1],
+        200 if model["data_objects"] else _template_dimensions()["lane"][1],
+    )
+    pool_height = len(model["lanes"]) * lane_height
     parts = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
         '<defs><marker id="panah" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#334155"/></marker></defs>',
         '<rect width="100%" height="100%" fill="#ffffff"/>',
         f'<text x="36" y="42" font-family="sans-serif" font-size="24" font-weight="700" fill="#172554">{html.escape(model["title"])}</text>',
+        f'<rect x="180" y="80" width="{width - 180}" height="{pool_height}" fill="#ffffff" stroke="#64748b" stroke-width="2"/>',
     ]
     for lane in model["lanes"]:
         y = lane_top[lane["id"]]
         parts.append(
-            f'<rect x="35" y="{y}" width="{width - 70}" height="210" fill="#f8fafc" stroke="#94a3b8"/>'
+            f'<rect x="210" y="{y}" width="{width - 210}" height="{lane_height}" fill="#f8fafc" stroke="#94a3b8"/>'
         )
-        parts.append(f'<line x1="190" y1="{y}" x2="190" y2="{y + 210}" stroke="#94a3b8"/>')
-        label = _wrap(lane["name"], 18)
-        for index, line in enumerate(label):
-            parts.append(
-                f'<text x="48" y="{y + 88 + index * 18}" font-family="sans-serif" font-size="14" fill="#334155">{html.escape(line)}</text>'
-            )
+        label_y = y + lane_height / 2
+        parts.append(
+            f'<text x="224" y="{label_y}" transform="rotate(-90 224 {label_y})" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#334155">{html.escape(lane["name"])}</text>'
+        )
 
     # Alur dan asosiasi digambar sebelum shape agar garis tidak menimpa teks node.
     for flow_id, source_id, target_id, _condition, _, _ in model["flows"]:
         source = positions[source_id]
         target = positions[target_id]
-        sx, sy = source["x"] + source["w"], source["y"] + source["h"] / 2
-        tx, ty = target["x"], target["y"] + target["h"] / 2
-        mx = (sx + tx) / 2
-        if flow_id == "Flow_Cuti_TidakDiambil":
-            route_y = max(sy, ty) + 18
-            path = f"M {sx} {sy} H {sx + 35} V {route_y} H {tx - 20} V {ty} H {tx}"
-        else:
-            path = f"M {sx} {sy} H {mx} V {ty} H {tx}"
+        points = _edge_points(source, target)
+        path = "M " + " L ".join(f"{x:g} {y:g}" for x, y in points)
         parts.append(
             f'<path d="{path}" fill="none" stroke="#334155" stroke-width="2" marker-end="url(#panah)"/>'
         )
@@ -954,13 +1086,9 @@ def build_svg(model: dict) -> bytes:
         )
         if label:
             lines = _wrap(label, 24)
-            y0 = (
-                max(sy, ty) + 18 - 16
-                if flow_id == "Flow_Cuti_TidakDiambil"
-                else sy - 18
-                if flow_id == "Flow_Cuti_PilihDiambil"
-                else (sy + ty) / 2 - (len(lines) - 1) * 8
-            )
+            mx = (points[1][0] + points[-2][0]) / 2
+            sy, ty = points[0][1], points[-1][1]
+            y0 = (sy + ty) / 2 - (len(lines) - 1) * 8
             for index, line in enumerate(lines):
                 parts.append(
                     f'<text x="{mx if flow_id == "Flow_Cuti_PilihDiambil" else mx + 4}" y="{y0 + index * 16}" text-anchor="{"middle" if flow_id == "Flow_Cuti_PilihDiambil" else "start"}" font-family="sans-serif" font-size="12" fill="#7c2d12">{html.escape(line)}</text>'
@@ -1015,7 +1143,7 @@ def build_svg(model: dict) -> bytes:
                 )
         else:
             parts.append(
-                f'<rect x="{pos["x"]}" y="{pos["y"]}" width="{pos["w"]}" height="{pos["h"]}" rx="12" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2"/>'
+                f'<rect x="{pos["x"]}" y="{pos["y"]}" width="{pos["w"]}" height="{pos["h"]}" rx="6" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2"/>'
             )
             lines = _wrap(node["name"], 24)
             text_height = 16
@@ -1046,14 +1174,18 @@ def build_svg(model: dict) -> bytes:
 
 
 def build_path_check(approved: bool = False) -> str:
-    status = "DISETUJUI PI; VERSI DIBEKUKAN" if approved else "DRAF UNTUK TINJAUAN PI"
+    status = (
+        "DISETUJUI PI; VERSI DIBEKUKAN"
+        if approved
+        else "REVISI STRUKTUR/TAMPILAN v2; MENUNGGU REVIEW PI"
+    )
     return f"""# Pemeriksaan Jalur Pilot BPMN
 
 Status: `{status}`. Pemeriksaan ini mengikuti hanya urutan dan kondisi pada PDF; bukan validasi terhadap flowchart visual.
 
 ## SOP Permohonan Izin Cuti Akademik
 
-Jalur yang dinyatakan: isi formulir dan persyaratan → minta persetujuan Ketua Program Studi → serahkan kepada Dekan dan disposisi ke Subbag Akademik dan Kemahasiswaan → pemeriksaan kelengkapan → **jika lengkap**, lanjut ke tanda tangan Dekan → pemberian nomor dan pengiriman tembusan → pembaruan status, pengarsipan, dan pengiriman kepada mahasiswa. Setelah pengiriman, draf memodelkan dua kemungkinan: jalur bawaan proses selesai tanpa pengambilan di loket; atau, **jika mahasiswa memilih mengambil surat**, mahasiswa mengambilnya di loket lalu proses selesai. Pemaknaan kata “dapat” sebagai pilihan dan penetapan jalur bawaan adalah tafsir draf yang wajib ditinjau PI.
+ Jalur yang dinyatakan: isi formulir dan persyaratan → minta persetujuan Ketua Program Studi → serahkan kepada Dekan dan disposisi ke Subbag Akademik dan Kemahasiswaan → pemeriksaan kelengkapan → **jika lengkap**, lanjut ke tanda tangan Dekan → pemberian nomor dan pengiriman tembusan → pembaruan status, pengarsipan, dan pengiriman kepada mahasiswa. Setelah pengiriman, model memuat jalur bawaan selesai tanpa pengambilan di loket atau jalur bersyarat saat mahasiswa memilih mengambil surat. PI menyetujui tafsir pilihan ini untuk pilot pada 2026-11-17; revisi v2 mengubah struktur/tampilan XML, bukan tafsir proses.
 
 Untuk keadaan persyaratan tidak lengkap, SOP tidak menyatakan tindakan atau tujuan. BPMN tidak menambahkan jalur tersebut; pertanyaan tentang tindak lanjut harus dianggap tidak terjawab oleh sumber.
 
@@ -1081,7 +1213,21 @@ def main() -> None:
         json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.exists() else {}
     )
     trace_rows = []
-    manifest = {"bahasa": "id", "status": "DRAF_UNTUK_TINJAUAN_PI", "models": []}
+    revision_history = previous_manifest.get("revisi") or {
+        "menggantikan": [
+            {"model_id": item.get("model_id"), "bpmn_sha256": item.get("bpmn_sha256")}
+            for item in previous_manifest.get("models", [])
+        ],
+        "ringkasan": "Struktur XML dan BPMN DI mengikuti pola template_contoh.bpmn; isi proses SOP dipertahankan.",
+    }
+    if previous_manifest.get("persetujuan_pi") and "persetujuan_sebelumnya" not in revision_history:
+        revision_history["persetujuan_sebelumnya"] = previous_manifest["persetujuan_pi"]
+    manifest = {
+        "bahasa": "id",
+        "status": "PENDING_REVIEW",
+        "revisi": revision_history,
+        "models": [],
+    }
     for model in MODELS:
         xml, rows = build_xml(model, inventory)
         preview = build_svg(model)

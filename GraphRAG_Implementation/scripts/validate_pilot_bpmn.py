@@ -15,7 +15,7 @@ VAULT = ROOT.parent
 EXPECTED = {
     "pilot_sop_a.bpmn": {
         "sop_id": "FSM-SOP-CUTI-AKADEMIK",
-        "model_id": "FSM-SOP-CUTI-AKADEMIK-BPMN-v1",
+        "model_id": "FSM-SOP-CUTI-AKADEMIK-BPMN-v2",
         "conditions": [
             (
                 "Flow_Cuti_Lengkap",
@@ -34,7 +34,7 @@ EXPECTED = {
     },
     "pilot_sop_b.bpmn": {
         "sop_id": "FSM-SOP-AKTIF-SETELAH-CUTI",
-        "model_id": "FSM-SOP-AKTIF-SETELAH-CUTI-BPMN-v1",
+        "model_id": "FSM-SOP-AKTIF-SETELAH-CUTI-BPMN-v2",
         "conditions": [],
         "default_flow": None,
     },

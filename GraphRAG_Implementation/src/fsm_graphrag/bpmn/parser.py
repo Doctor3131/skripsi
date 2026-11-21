@@ -242,6 +242,8 @@ def parse_bpmn_xml(xml: str | bytes, source_name: str = "<memory>") -> BpmnDocum
         "lane",
         "flowNodeRef",
         "documentation",
+        "incoming",
+        "outgoing",
         "startEvent",
         "endEvent",
         "intermediateCatchEvent",
@@ -288,6 +290,7 @@ def parse_bpmn_xml(xml: str | bytes, source_name: str = "<memory>") -> BpmnDocum
         "BPMNPlane",
         "BPMNShape",
         "BPMNEdge",
+        "BPMNLabel",
         "Bounds",
         "waypoint",
         # IO specification wrappers are represented by DataAssociation records.

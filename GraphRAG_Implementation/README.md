@@ -42,6 +42,15 @@ Pipeline ada di `src/fsm_graphrag/graphrag_pipeline.py`: `Text2CypherRetriever` 
 
 Pipeline memakai `NEO4J_USER` dan `NEO4J_PASSWORD` yang sama dengan Compose. Neo4j Community tidak menyediakan role read-only: akun terautentikasi memiliki hak admin. Validator Cypher, `EXPLAIN`, routing `READ`, batas hasil, dan timeout membatasi operasi melalui aplikasi, tetapi tidak mengubah hak akun pada database. Smoke lokal membuktikan jalur aplikasi dan konektivitas, bukan pembatasan hak database.
 
+Reset seluruh graph data hanya dilakukan atas arahan eksplisit PI. Untuk menghapus semua node dan relasi pada database proyek `neo4j` sebelum ingest ulang:
+
+```sh
+uv run python scripts/reset_graph_database.py --confirm-empty-all-data
+uv run python scripts/ingest_pilot_graph.py
+```
+
+Reset mempertahankan database, indeks/konstrain, volume, autentikasi, dan konfigurasi. Jumlah sebelum/sesudah dicatat di `results/m2/database_reset_report.json`.
+
 ## Verifikasi pengembangan
 
 ```sh

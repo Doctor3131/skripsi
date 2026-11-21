@@ -1,6 +1,6 @@
 # Aturan Pemodelan BPMN Pilot
 
-Status: `DISETUJUI PI DAN DIBEKUKAN` pada 2026-11-17. Checksum, cakupan persetujuan, dan bukti percakapan tercatat pada `results/m2/pilot_manifest.json`.
+Status: model v1 `DISETUJUI PI DAN DIBEKUKAN` pada 2026-11-17; revisi struktur/tampilan v2 berbasis template berstatus `PENDING_REVIEW`. Checksum, cakupan persetujuan, dan riwayat revisi tercatat pada `results/m2/pilot_manifest.json`.
 
 ## Bahasa dan sumber
 
@@ -17,7 +17,7 @@ Status: `DISETUJUI PI DAN DIBEKUKAN` pada 2026-11-17. Checksum, cakupan persetuj
 - Pada SOP cuti langkah 8, kata “dapat mengambil” dimodelkan sebagai pilihan: jalur bersyarat menuju aktivitas pengambilan surat, dengan jalur bawaan selesai setelah surat dikirim. PI menyetujui tafsir ini untuk model pilot pada 2026-11-17; ini tidak mengubah teks SOP sumber.
 - Pada SOP aktif setelah cuti, modelkan pelaporan dan registrasi daring sebagai aktivitas mahasiswa. “Terdaftar sebagai peserta kuliah/mahasiswa aktif” dimodelkan sebagai hasil akhir, bukan tugas kantor terpisah.
 - Data input/output hanya dimodelkan jika disebutkan. Relasi conceptual lintas SOP tidak dibuat sebagai edge BPMN/graph tanpa bukti proses atau keputusan semantik tersendiri.
-- Identitas proyek: `FSM-SOP-CUTI-AKADEMIK` dan `FSM-SOP-AKTIF-SETELAH-CUTI`. ID model: `FSM-SOP-CUTI-AKADEMIK-BPMN-v1` dan `FSM-SOP-AKTIF-SETELAH-CUTI-BPMN-v1`.
+- Identitas proyek: `FSM-SOP-CUTI-AKADEMIK` dan `FSM-SOP-AKTIF-SETELAH-CUTI`. Model v1 yang disetujui: `FSM-SOP-CUTI-AKADEMIK-BPMN-v1` dan `FSM-SOP-AKTIF-SETELAH-CUTI-BPMN-v1`.
 - Model v1 dibekukan dan telah di-ingest ke Neo4j lokal setelah persetujuan PI. Tidak ada penggunaan layanan LLM eksternal.
 
 ## Status elemen dan konflik yang diketahui
@@ -27,3 +27,10 @@ Status: `DISETUJUI PI DAN DIBEKUKAN` pada 2026-11-17. Checksum, cakupan persetuj
 - Cuti, langkah 7–8 menyebut surat dikirim lalu mahasiswa “dapat mengambil” surat di loket. Model memaknai “dapat” sebagai pilihan dan membuat akhir setelah pengiriman sebagai jalur bawaan; PI menyetujui tafsir ini untuk pilot pada 2026-11-17.
 - Metadata persetujuan pada DOCX cuti menyebut Rektor, sementara uraian proses menyebut Dekan menandatangani Surat Izin Dekan. Model mengikuti langkah PDF dan menandai konflik metadata; PI menyetujui perlakuan ini untuk pilot pada 2026-11-17.
 - SOP aktif setelah cuti mencantumkan status aktif sebagai langkah 3 di PDF, sedangkan tabel DOCX menempatkannya sebagai hasil. Model memperlakukannya sebagai hasil akhir; PI menyetujui tafsir ini untuk pilot pada 2026-11-17.
+
+## Revisi v2 berbasis template
+
+- **Arahan PI (2026-11-17):** gunakan `data/bpmn/template_contoh.bpmn` sebagai basis struktur XML dan tata letak, dengan isi proses pilot tetap mengikuti sumber dan keputusan semantik yang sudah disetujui.
+- ID model revisi: `FSM-SOP-CUTI-AKADEMIK-BPMN-v2` dan `FSM-SOP-AKTIF-SETELAH-CUTI-BPMN-v2`; nama elemen proses BPMN tetap stabil.
+- Pool, lane horizontal, ukuran shape dasar, label BPMN DI, dan routing ortogonal mengikuti pola template. Referensi `incoming`/`outgoing` dicantumkan agar struktur alur eksplisit.
+- v1 tetap tercatat sebagai revisi sebelumnya di manifest/decision log. Review PI terhadap tampilan v2 masih menunggu dan dicatat terpisah dari persetujuan semantik v1.

@@ -15,7 +15,7 @@ from fsm_graphrag.graphrag_pipeline import (
 from fsm_graphrag.text_to_cypher import PipelineError, QuestionRequest
 
 SOP_ID = "FSM-SOP-CUTI-AKADEMIK"
-MODEL_ID = "FSM-SOP-CUTI-AKADEMIK-BPMN-v1"
+MODEL_ID = "FSM-SOP-CUTI-AKADEMIK-BPMN-v2"
 QUERY = (
     "MATCH (p:Process {sop_id: $sop_id, model_id: $model_id})-[:HAS_ELEMENT]->(a:Activity) "
     "RETURN p.sop_id AS sop_id, p.model_id AS model_id, a.bpmn_id AS bpmn_id, "

@@ -14,12 +14,12 @@ PILOTS = (
     (
         VAULT / "data/bpmn/pilot_sop_a.bpmn",
         "FSM-SOP-CUTI-AKADEMIK",
-        "FSM-SOP-CUTI-AKADEMIK-BPMN-v1",
+        "FSM-SOP-CUTI-AKADEMIK-BPMN-v2",
     ),
     (
         VAULT / "data/bpmn/pilot_sop_b.bpmn",
         "FSM-SOP-AKTIF-SETELAH-CUTI",
-        "FSM-SOP-AKTIF-SETELAH-CUTI-BPMN-v1",
+        "FSM-SOP-AKTIF-SETELAH-CUTI-BPMN-v2",
     ),
 )
 

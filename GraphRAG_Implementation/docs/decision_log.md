@@ -1,5 +1,23 @@
 # Decision Log
 
+## 2026-11-17 — Revisi BPMN v2 berbasis template dan reset graph penuh
+
+- **Arahan PI:** gunakan `data/bpmn/template_contoh.bpmn` sebagai basis struktur XML dan tampilan kedua BPMN pilot; ganti isi database proyek dengan graph baru.
+- **Perubahan model:** file `pilot_sop_a.bpmn` dan `pilot_sop_b.bpmn` tetap pada nama yang sama; ID model menjadi v2. Pool, lane horizontal, ukuran shape, label BPMN DI, dan jalur ortogonal mengikuti pola template. ID elemen, alur, kondisi, lane, objek data, dan provenance SOP dipertahankan.
+- **Pemulihan struktur:** revisi lokal sebelumnya pada BPMN cuti kehilangan beberapa child `dataInput`/`dataOutput` dan `targetRef`. Generator v2 memulihkan referensi tersebut dari model deklaratif yang disetujui; semantik data kembali lengkap.
+- **Validasi:** 40 unit test lulus; Ruff lint/format dan validasi BPMN lokal lulus; pra-ingest tidak menemukan unsupported element, ID duplikat, atau endpoint hilang. Proyeksi tetap 43 node/70 relasi.
+- **Reset database:** atas arahan eksplisit PI, seluruh graph data pada database proyek `neo4j` dihapus: 43 node/70 relasi menjadi 0/0. Indeks, konstrain, volume, autentikasi, dan konfigurasi dipertahankan. Bukti: `results/m2/database_reset_report.json`.
+- **Ingest ulang:** v2 berhasil di-ingest (43 node/70 relasi), provenance cocok dengan checksum baru, lalu rerun idempoten tidak menggandakan data. Run tercatat di `results/m2/ingestion_report.json`.
+- **Smoke:** retrieval baca-saja lokal untuk kedua SOP lulus tanpa panggilan LLM; `results/m4/graphrag_local_smoke.json`.
+- **Status review:** manifest v2 masih `PENDING_REVIEW`; PI perlu meninjau tampilan/diagram v2 sebelum freeze. Persetujuan semantik v1 tetap menjadi landasan konten v2, bukan approval final visual v2.
+
+## 2026-11-17 — Penutupan tindak lanjut M2 atas keputusan PI
+
+- **Keputusan PI:** Untuk lingkup eksplorasi pilot, status pemeriksaan sumber/izin/otoritas versi diterima dan tindak lanjut validasi BPMN XSD serta review modeler khusus ditutup.
+- **Batas klaim:** Keputusan ini adalah penerimaan PI untuk melanjutkan lingkup eksplorasi; bukan bukti verifikasi independen atas pemilik/hak publikasi dan tidak menyatakan XSD atau modeler BPMN telah diperiksa.
+- **Keputusan PI:** Dokumentasi backup/restore Neo4j dikeluarkan dari lingkup tugas saat ini.
+- **Bukti pencatatan:** `docs/implementation_task_tracker.md` dan checklist root `AGENTS.md`.
+
 ## 2026-11-17 — Koneksi GraphRAG menggunakan kredensial Neo4j Community
 
 - **Keputusan PI:** Tetap menggunakan Neo4j Community self-hosted dengan autentikasi aktif; pipeline memakai `NEO4J_USER/PASSWORD` yang sama dengan Compose.
